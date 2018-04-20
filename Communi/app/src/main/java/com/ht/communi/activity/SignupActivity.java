@@ -3,6 +3,7 @@ package com.ht.communi.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +25,8 @@ public class SignupActivity extends AppCompatActivity {
     private EditText ed_password;
     private EditText ed_reEnterPassword;
     private Button btn_signUp;
+    private Button btn_verify;
+    MyCountDownTimer myCountDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,8 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void initView(){
+        //new倒计时对象,总共的时间,每隔多少秒更新一次时间
+        myCountDownTimer = new MyCountDownTimer(5000,1000);
         ed_name = findViewById(R.id.input_name);
         ed_school = findViewById(R.id.input_school);
         ed_email = findViewById(R.id.input_email);
@@ -40,12 +45,50 @@ public class SignupActivity extends AppCompatActivity {
         ed_password = findViewById(R.id.input_password);
         ed_reEnterPassword = findViewById(R.id.input_reEnterPassword);
         btn_signUp = findViewById(R.id.btn_signup);
+        btn_verify = findViewById(R.id.btn_verify);
+        btn_verify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myCountDownTimer.start();
+            }
+        });
+
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signup();
             }
         });
+    }
+
+    //验证码倒计时类
+    private class MyCountDownTimer extends CountDownTimer {
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+
+        //计时过程
+        @Override
+        public void onTick(long l) {
+            //防止计时过程中重复点击
+            btn_verify.setClickable(false);
+            btn_verify.setAlpha(0.8f);
+            btn_verify.setText(l/1000+"s");
+
+        }
+
+
+        //计时完毕的方法
+        @Override
+        public void onFinish() {
+            btn_verify.setAlpha(1.0f);
+            //重新给Button设置文字
+            btn_verify.setText("重新获取验证码");
+            //设置可点击
+            btn_verify.setClickable(true);
+        }
     }
 
     public void signup() {
@@ -109,16 +152,6 @@ public class SignupActivity extends AppCompatActivity {
             }
     });
 
-//        new android.os.Handler().postDelayed(
-//                new Runnable() {
-//                    public void run() {
-//                        // On complete call either onSignupSuccess or onSignupFailed
-//                        // depending on success
-//                        onSignupSuccess();
-//                        // onSignupFailed();
-//                        progressDialog.dismiss();
-//                    }
-//                }, 3000);
     }
 
 
