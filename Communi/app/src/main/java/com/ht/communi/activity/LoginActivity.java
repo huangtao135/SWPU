@@ -36,6 +36,12 @@ public class LoginActivity extends AppCompatActivity {
         //第一：默认初始化
         Bmob.initialize(this, "214523c8d5aeba03fe3da3bac366f14a");
 
+        //自动登陆
+        BmobUser bmobUser = BmobUser.getCurrentUser();
+        if(bmobUser != null){
+            Log.i("htht", "bmobUser: " + bmobUser.getUsername());
+            onLoginSuccess();
+        }
     }
     public void initView(){
         ed_account = findViewById(R.id.input_account);

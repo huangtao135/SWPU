@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.ht.communi.fragment.CommunityFragment;
+import com.ht.communi.fragment.PersonalFragment;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentList = new ArrayList<>();
         fragmentList.add(new CommunityFragment());
         fragmentList.add(new CommunityFragment());
-        fragmentList.add(new CommunityFragment());
+        fragmentList.add(new PersonalFragment());
         viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {

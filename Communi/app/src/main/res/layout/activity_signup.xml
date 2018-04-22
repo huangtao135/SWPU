@@ -70,7 +70,7 @@
             <EditText android:id="@+id/input_mobile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="phone"
                 android:hint="电话号码" />
         </android.support.design.widget.TextInputLayout>
 
@@ -114,7 +114,7 @@
                 <EditText android:id="@+id/input_verify"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
+                    android:inputType="number"
                     android:hint="验证码"/>
             </android.support.design.widget.TextInputLayout>
             <Button

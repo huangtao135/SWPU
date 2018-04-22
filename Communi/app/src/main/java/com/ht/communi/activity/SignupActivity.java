@@ -1,6 +1,7 @@
 package com.ht.communi.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -9,12 +10,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ht.communi.javabean.Student;
 
+import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -24,32 +29,68 @@ public class SignupActivity extends AppCompatActivity {
     private EditText ed_mobile;
     private EditText ed_password;
     private EditText ed_reEnterPassword;
+    private EditText ed_verify;
+    private TextView tv_loginLink;
     private Button btn_signUp;
     private Button btn_verify;
     MyCountDownTimer myCountDownTimer;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        context = this;
         initView();
     }
 
     public void initView(){
         //new倒计时对象,总共的时间,每隔多少秒更新一次时间
-        myCountDownTimer = new MyCountDownTimer(5000,1000);
+        myCountDownTimer = new MyCountDownTimer(60000,1000);
         ed_name = findViewById(R.id.input_name);
         ed_school = findViewById(R.id.input_school);
         ed_email = findViewById(R.id.input_email);
         ed_mobile = findViewById(R.id.input_mobile);
         ed_password = findViewById(R.id.input_password);
         ed_reEnterPassword = findViewById(R.id.input_reEnterPassword);
+        ed_verify = findViewById(R.id.input_verify);
+        tv_loginLink = findViewById(R.id.link_login);
+        tv_loginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         btn_signUp = findViewById(R.id.btn_signup);
         btn_verify = findViewById(R.id.btn_verify);
         btn_verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myCountDownTimer.start();
+                //请求短信
+                BmobSMS.requestSMSCode(ed_mobile.getText().toString(), "我的模板", new QueryListener<Integer>() {
+                    @Override
+                    public void done(Integer integer, BmobException e) {
+                        if(e==null){//验证码发送成功
+                            myCountDownTimer.start();
+                            Log.i("htht", "短信id："+integer);//用于查询本次短信发送详情
+                        }else{
+                            String errorMessage ;
+                            switch (e.getErrorCode()){
+                                case 9018:
+                                    errorMessage = "手机号码为空，咋子发出去嘛！！！";
+                                    break;
+                                default:
+                                    errorMessage = "验证码获取失败！！！";
+                                    break;
+
+                            }
+                            Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            Log.e("htht", "done: "+e.getMessage());
+                            Log.e("htht", "done:  code" + e.getErrorCode());
+                        }
+                    }
+                });
             }
         });
 
@@ -94,70 +135,93 @@ public class SignupActivity extends AppCompatActivity {
     public void signup() {
         if (!validate()) {
             onSignupFailed();
+            Log.i("htht", "signup: 直接退出了");
             return;
         }
 
         btn_signUp.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
-                R.style.Theme_AppCompat_DayNight_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("创建账号中...");
-        progressDialog.show();
 
-        String name = ed_name.getText().toString();
-        String school = ed_school.getText().toString();
-        String email = ed_email.getText().toString();
-        String mobile = ed_mobile.getText().toString();
-        String password = ed_password.getText().toString();
-
-        // TODO: Implement your own signup logic here.
-
-        Student student = new Student();
-        student.setUsername(mobile);
-        student.setStuName(name);
-        student.setSchool(school);
-        student.setEmail(email);
-        student.setMobilePhoneNumber(mobile);
-        student.setPassword(password);
-        student.signUp(new SaveListener<Student>() {
+        //验证码验证
+        BmobSMS.verifySmsCode(ed_mobile.getText().toString(), ed_verify.getText().toString(), new UpdateListener() {
             @Override
-            public void done(Student student, BmobException e) {
-                if(e == null){
-                    onSignupSuccess();
+            public void done(BmobException e) {
+                if(e==null){
+                    //短信验证码已验证成功
+                    Log.i("htht", "验证通过");
+                    final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+                            R.style.Theme_AppCompat_DayNight_Dialog);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setMessage("创建账号中...");
+                    progressDialog.show();
+
+
+                    String name = ed_name.getText().toString();
+                    String school = ed_school.getText().toString();
+                    String email = ed_email.getText().toString();
+                    String mobile = ed_mobile.getText().toString();
+                    String password = ed_password.getText().toString();
+
+                    Student student = new Student();
+                    student.setUsername(mobile);
+                    student.setStuName(name);
+                    student.setSchool(school);
+                    student.setEmail(email);
+                    student.setMobilePhoneNumber(mobile);
+                    student.setPassword(password);
+                    student.signUp(new SaveListener<Student>() {
+                        @Override
+                        public void done(Student student, BmobException e) {
+                            if(e == null){
+                                onSignupSuccess();
+                            }else{
+                                String errorMessage ;
+                                switch (e.getErrorCode()){
+                                    case 203:
+                                        errorMessage = "邮箱已经存在";
+                                        break;
+                                    case 202:
+                                    case 209:
+                                        errorMessage = "该手机号码已经存在";
+                                        break;
+                                    case 9016:
+                                        errorMessage = "网都没有，你注册个啥！！！";
+                                        break;
+                                    default:
+                                        errorMessage = "注册失败！";
+                                        break;
+
+                                }
+                                Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
+                                Log.i("htht", "出错了 "+e.getErrorCode());
+                                onSignupFailed();
+                            }
+                            progressDialog.dismiss();
+                        }
+                    });
+
                 }else{
+                    Log.i("htht", "验证失败：code ="+e.getErrorCode()+",msg = "+e.getLocalizedMessage()+"线程名      "+Thread.currentThread().getName());
                     String errorMessage ;
                     switch (e.getErrorCode()){
-                        case 203:
-                            errorMessage = "邮箱已经存在";
-                            break;
-                        case 202:
-                        case 209:
-                            errorMessage = "该手机号码已经存在";
-                            break;
-                        case 9016:
-                            errorMessage = "网都没有，你注册个啥！！！";
+                        case 207:
+                            errorMessage = "验证码错误，请重新输入 :)";
                             break;
                         default:
-                            errorMessage = "注册失败！";
+                            errorMessage = "出错了！！！";
                             break;
 
                     }
-                    Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
-                    Log.i("htht", "出错了 "+e.getErrorCode());
+                    Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_SHORT).show();
                     onSignupFailed();
+                }
             }
-
-                progressDialog.dismiss();
-            }
-    });
-
+        });
     }
 
 
     public void onSignupSuccess() {
         btn_signUp.setEnabled(true);
-
         Intent intent = new Intent();
         // 获取用户计算后的结果
         String mobile = ed_mobile.getText().toString();
@@ -172,13 +236,13 @@ public class SignupActivity extends AppCompatActivity {
 
     public boolean validate() {
         boolean valid = true;
-
         String name = ed_name.getText().toString();
         String address = ed_school.getText().toString();
         String email = ed_email.getText().toString();
         String mobile = ed_mobile.getText().toString();
         String password = ed_password.getText().toString();
         String reEnterPassword = ed_reEnterPassword.getText().toString();
+        String verify = ed_verify.getText().toString();
 
         if (name.isEmpty()) {
             ed_name.setError("请输入您的姓名");
@@ -224,6 +288,14 @@ public class SignupActivity extends AppCompatActivity {
             ed_reEnterPassword.setError(null);
         }
 
+        if(verify.isEmpty() ){
+            ed_verify.setError("请输入验证码");
+            valid = false;
+        }else{
+            ed_verify.setError(null);
+        }
+
+        Log.i("htht", "返回之前：valid ="+valid+"线程名       "+Thread.currentThread().getName());
         return valid;
     }
 }
