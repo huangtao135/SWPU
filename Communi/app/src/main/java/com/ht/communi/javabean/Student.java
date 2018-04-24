@@ -1,6 +1,7 @@
 package com.ht.communi.javabean;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
 
 /**
  * Created by Administrator on 2018/4/17.
@@ -11,6 +12,7 @@ public class Student extends BmobUser {
     private String school;
     private Boolean sex;
     private Integer age;
+    private BmobFile userIcon;
 
     public String getSchool() {
         return school;
@@ -42,5 +44,13 @@ public class Student extends BmobUser {
 
     public void setStuName(String stuName) {
         this.stuName = stuName;
+    }
+
+    public BmobFile getUserIcon() {
+        return userIcon;
+    }
+
+    public void setUserIcon(BmobFile userIcon) {
+        this.userIcon = userIcon;
     }
 }

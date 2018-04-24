@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(new CommunityFragment());
         fragmentList.add(new CommunityFragment());
         fragmentList.add(new PersonalFragment());
+        //避免切回fragment1的时候，销毁fragment3，保存fragment3的状态
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
