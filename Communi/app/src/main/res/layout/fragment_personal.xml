@@ -63,7 +63,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:paddingLeft="12dp"
-                    android:text="设置头像"
+                    android:text="个性头像"
                     android:textSize="16dp" />
 
                 <com.ht.communi.view.CircleImageView
@@ -77,6 +77,7 @@
                     android:layout_alignParentEnd="true" />
             </RelativeLayout>
 
+            <!--昵称-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
@@ -88,10 +89,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="12dp"
-                    android:text="设置昵称"
+                    android:text="个性昵称"
                     android:textSize="16dp" />
 
                 <EditText
+                    android:id="@+id/ed_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/actionsheet_bottom_normal"
@@ -99,12 +101,12 @@
                     android:gravity="center|right"
                     android:hint="西柚社"
                     android:inputType="text"
-                    android:maxLength="10"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
                     android:singleLine="true" />
             </LinearLayout>
 
+            <!--学校-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
@@ -116,23 +118,53 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="12dp"
-                    android:text="设置联系方式"
+                    android:text="学校"
                     android:textSize="16dp" />
 
                 <EditText
+                    android:id="@+id/ed_school"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/actionsheet_bottom_normal"
                     android:ellipsize="end"
                     android:gravity="center|right"
-                    android:hint="15512345678"
+                    android:hint="西南石油大学"
                     android:inputType="phone"
-                    android:maxLength="10"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
                     android:singleLine="true" />
             </LinearLayout>
 
+            <!--联系方式-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/actionsheet_bottom_normal"
+                android:gravity="center_vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="12dp"
+                    android:text="联系方式"
+                    android:textSize="16dp" />
+
+                <EditText
+                    android:id="@+id/ed_mobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/actionsheet_bottom_normal"
+                    android:ellipsize="end"
+                    android:gravity="center|right"
+                    android:hint="180804919**"
+                    android:inputType="phone"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <!--邮箱-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
@@ -148,14 +180,14 @@
                     android:textSize="16dp" />
 
                 <EditText
+                    android:id="@+id/ed_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/actionsheet_bottom_normal"
                     android:ellipsize="end"
                     android:gravity="center|right"
-                    android:hint="boylw789"
+                    android:hint="666@qq.com"
                     android:inputType="text"
-                    android:maxLength="10"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
                     android:singleLine="true" />

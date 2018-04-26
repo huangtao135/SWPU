@@ -14,9 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.ht.communi.activity.R;
 import com.ht.communi.alrtdialog.ActionSheetDialog;
 import com.ht.communi.javabean.Student;
@@ -67,6 +69,7 @@ public class PersonalFragment extends Fragment {
      * 初始化
      */
     public void init() {
+        //修改密码
         Button btn_changePassword = getActivity().findViewById(R.id.btn_changePassword);
         btn_changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +87,7 @@ public class PersonalFragment extends Fragment {
                 });
             }
         });
+        //退出登陆
         Button btn_signout = getActivity().findViewById(R.id.btn_signout);
         btn_signout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +98,7 @@ public class PersonalFragment extends Fragment {
             }
         });
 
+        //左上角返回图标
         bImageView = getActivity().findViewById(R.id.imageview_person_back);
         bImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,6 +107,7 @@ public class PersonalFragment extends Fragment {
             }
         });
 
+        //头像icon
         cImageView = getActivity().findViewById(R.id.circleimageview_personal_photo);
         cImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +136,37 @@ public class PersonalFragment extends Fragment {
                                 }).show();
             }
         });
+
+        //个性昵称
+        EditText ed_username = getActivity().findViewById(R.id.ed_username);
+
+        //学校
+        EditText ed_school = getActivity().findViewById(R.id.ed_school);
+
+        //手机号
+        EditText ed_mobile = getActivity().findViewById(R.id.ed_mobile);
+
+        //邮箱
+        EditText ed_email = getActivity().findViewById(R.id.ed_email);
+
+        Student student = BmobUser.getCurrentUser(Student.class);
+        if (student != null) {
+            ed_username.setText(student.getUsername());
+            ed_school.setText(student.getSchool());
+            ed_mobile.setText(student.getMobilePhoneNumber());
+            ed_email.setText(student.getEmail());
+
+            Log.i("htht", "student.getuserIcon=======================" + student.getUserIcon());
+            Log.i("htht", "student.getUserIcon().getFileUrl()========" + student.getUserIcon().getFileUrl());
+            Log.i("htht", "student.getuserIcon=======================" + student.getUserIcon().getUrl());
+
+            Glide.with(getContext())
+                    .load(student.getUserIcon().getFileUrl())
+                    .error(R.mipmap.ic_launcher)
+                    .into(cImageView);
+
+
+        }
     }
 
 
@@ -198,62 +235,50 @@ public class PersonalFragment extends Fragment {
                             Log.i("htht", "上传文件成功:" + bmobFile.getFileUrl());
                             Student student = new Student();
                             student.setUserIcon(bmobFile);
-                            student.update(Student.getCurrentUser().getObjectId(), new UpdateListener() {
+                            student.update(BmobUser.getCurrentUser(Student.class).getObjectId(), new UpdateListener() {
                                 @Override
                                 public void done(BmobException e) {
-                                    if (e == null){
+                                    if (e == null) {
                                         Log.i("htht", "成功");
-                                    }else {
-                                        Log.i("htht", "失败"+e.getErrorCode());
+                                    } else {
+                                        Log.i("htht", "失败" + e.getErrorCode());
                                     }
                                 }
                             });
+                            deleteIcon(IMAGE_FILE_CROP_NAME);
                         } else {
-                            Log.i("htht", "上传文件失败:" + bmobFile.getFileUrl() + "错误码   " + e.getErrorCode());
-                        }
-                    }
-                    @Override
-                    public void onProgress(Integer value) {
-                        // 返回的上传进度（百分比）
-                    }
-                    @Override
-                    public void onFinish() {
-                        super.onFinish();
-                        //检查剪裁图片删除没有，如果没有，则删除。
-                        tempFile = new File(Environment.getExternalStorageDirectory(),
-                                IMAGE_FILE_CROP_NAME);
-                        Log.i("htht", "剪裁图片文件存在吗======= " + tempFile);
-                        if (tempFile.exists()) {
-                            tempFile.delete();
-                        }
+                            String errorMessage;
+                            switch (e.getErrorCode()) {
+                                case 9016:
+                                    errorMessage = "没有网，上传服务器失败！！！";
+                                    break;
+                                default:
+                                    errorMessage = "发生了一个不为人知的错误！！！";
+                                    break;
 
-                        Student newUser = new Student();
-                        newUser.setUserIcon(bmobFile);
-
-                        newUser.update(Student.getCurrentUser().getObjectId(),new UpdateListener() {
-                            @Override
-                            public void done(BmobException e) {
-                                if(e==null){
-                                    Log.i("htht", "更新用户信息成功: ");
-                                }else{
-                                    Log.i("htht", "更新用户信息成功: "+e.getErrorCode());
-                                }
                             }
-                        });
+                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            Log.i("htht", "上传文件失败:错误码   " + e.getErrorCode());
+                            deleteIcon(IMAGE_FILE_CROP_NAME);
+                        }
                     }
                 });
 
                 //检查是否拍了照片，如果拍了则删除。
-                tempFile = new File(Environment.getExternalStorageDirectory(),
-                        IMAGE_FILE_NAME);
-                Log.i("htht", "拍照文件存在吗======= " + tempFile);
-                if (tempFile.exists()) {
-                    tempFile.delete();
-                }
-
+                deleteIcon(IMAGE_FILE_NAME);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void deleteIcon(String path){
+        //检查剪裁图片删除没有，如果没有，则删除。
+        tempFile = new File(Environment.getExternalStorageDirectory(),
+                path);
+        Log.i("htht", "文件存在吗======= " + tempFile);
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
     }
 
     //将bitmap转换成file
