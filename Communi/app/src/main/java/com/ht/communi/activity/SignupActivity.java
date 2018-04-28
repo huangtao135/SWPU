@@ -33,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     private TextView tv_loginLink;
     private Button btn_signUp;
     private Button btn_verify;
-    MyCountDownTimer myCountDownTimer;
+    private MyCountDownTimer myCountDownTimer;
     private Context context;
 
     @Override
@@ -244,8 +244,8 @@ public class SignupActivity extends AppCompatActivity {
         String reEnterPassword = ed_reEnterPassword.getText().toString();
         String verify = ed_verify.getText().toString();
 
-        if (name.isEmpty()) {
-            ed_name.setError("请输入您的姓名");
+        if (name.isEmpty()|| name.length() > 10) {
+            ed_name.setError("请输入小于10位用户名");
             valid = false;
         } else {
             ed_name.setError(null);

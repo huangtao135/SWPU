@@ -37,9 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         Bmob.initialize(this, "214523c8d5aeba03fe3da3bac366f14a");
 
         //自动登陆
-        BmobUser bmobUser = BmobUser.getCurrentUser();
-        if(bmobUser != null){
-            Log.i("htht", "bmobUser: " + bmobUser.getUsername());
+        Student student = BmobUser.getCurrentUser(Student.class);
+        if(student != null){
+            Log.i("htht", "bmobUser: " + student.getUsername());
             onLoginSuccess();
         }
     }

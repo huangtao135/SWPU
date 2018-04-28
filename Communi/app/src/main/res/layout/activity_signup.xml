@@ -83,7 +83,7 @@
             <EditText android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
+                android:inputType="numberPassword"
                 android:hint="密码"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -96,7 +96,7 @@
             <EditText android:id="@+id/input_reEnterPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
+                android:inputType="numberPassword"
                 android:hint="重输密码"/>
         </android.support.design.widget.TextInputLayout>
 

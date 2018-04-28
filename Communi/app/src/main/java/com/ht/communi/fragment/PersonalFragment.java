@@ -1,6 +1,7 @@
 package com.ht.communi.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -13,12 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.ht.communi.activity.ChangeMessageActivity;
+import com.ht.communi.activity.ChangePasswordActivity;
+import com.ht.communi.activity.LoginActivity;
 import com.ht.communi.activity.R;
 import com.ht.communi.alrtdialog.ActionSheetDialog;
 import com.ht.communi.javabean.Student;
@@ -35,9 +38,18 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
+import static com.ht.communi.activity.ChangeMessageActivity.CHANGE_TYPE_EMAIL;
+import static com.ht.communi.activity.ChangeMessageActivity.CHANGE_TYPE_MOBILE;
+import static com.ht.communi.activity.ChangeMessageActivity.CHANGE_TYPE_SCHOOL;
+import static com.ht.communi.activity.ChangeMessageActivity.CHANGE_TYPE_STU_NAME;
+import static com.ht.communi.activity.ChangeMessageActivity.RESULT_EMAIL;
+import static com.ht.communi.activity.ChangeMessageActivity.RESULT_MOBILE;
+import static com.ht.communi.activity.ChangeMessageActivity.RESULT_SCHOOL;
+import static com.ht.communi.activity.ChangeMessageActivity.RESULT_USER_NAME;
+
 public class PersonalFragment extends Fragment {
+    private Context context;
     private CircleImageView cImageView;
-    private ImageView bImageView;
 
     /* 头像文件 */
     private static final String IMAGE_FILE_NAME = "temp_head_image.jpg";
@@ -46,10 +58,15 @@ public class PersonalFragment extends Fragment {
     /* 请求识别码 */
     private static final int PHOTO_REQUEST_CAMERA = 1;// 拍照
     private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
-    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+    private static final int PHOTO_REQUEST_CUT = 3;// 剪切照片结果
+    private static final int STUDENT_USER_MESSAGE = 4;// 修改用户名信息
 
     private File tempFile;
     private BmobFile bmobFile;
+    private TextView tv_username;
+    private TextView tv_school;
+    private TextView tv_mobile;
+    private TextView tv_email;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,57 +79,19 @@ public class PersonalFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
-
     }
-
     /**
      * 初始化
      */
     public void init() {
-        //修改密码
-        Button btn_changePassword = getActivity().findViewById(R.id.btn_changePassword);
-        btn_changePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BmobUser.updateCurrentUserPassword("1111", "11111111", new UpdateListener() {
-                    @Override
-                    public void done(BmobException e) {
-                        if (e == null) {
-                            Log.i("htht", "done: 密码修改成功，可以用新密码进行登录啦");
-                        } else {
-                            Log.i("htht", "done: 密码修改失败，可以用新密码进行登录啦" + e.getErrorCode());
-                        }
-                    }
-
-                });
-            }
-        });
-        //退出登陆
-        Button btn_signout = getActivity().findViewById(R.id.btn_signout);
-        btn_signout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BmobUser.logOut();   //清除缓存用户对象
-                BmobUser currentUser = BmobUser.getCurrentUser(); // 现在的currentUser是null了
-                Log.i("htht", "done: 退出后" + currentUser);
-            }
-        });
-
-        //左上角返回图标
-        bImageView = getActivity().findViewById(R.id.imageview_person_back);
-        bImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                finish();
-            }
-        });
+        context = getContext();
 
         //头像icon
         cImageView = getActivity().findViewById(R.id.circleimageview_personal_photo);
         cImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ActionSheetDialog(getContext())
+                new ActionSheetDialog(context)
                         .builder()
                         .setCancelable(false)
                         .setCanceledOnTouchOutside(false)
@@ -138,35 +117,94 @@ public class PersonalFragment extends Fragment {
         });
 
         //个性昵称
-        EditText ed_username = getActivity().findViewById(R.id.ed_username);
+        tv_username = getActivity().findViewById(R.id.tv_username);
 
         //学校
-        EditText ed_school = getActivity().findViewById(R.id.ed_school);
+        tv_school = getActivity().findViewById(R.id.tv_school);
 
         //手机号
-        EditText ed_mobile = getActivity().findViewById(R.id.ed_mobile);
+        tv_mobile = getActivity().findViewById(R.id.tv_mobile);
 
         //邮箱
-        EditText ed_email = getActivity().findViewById(R.id.ed_email);
+        tv_email = getActivity().findViewById(R.id.tv_email);
 
         Student student = BmobUser.getCurrentUser(Student.class);
         if (student != null) {
-            ed_username.setText(student.getUsername());
-            ed_school.setText(student.getSchool());
-            ed_mobile.setText(student.getMobilePhoneNumber());
-            ed_email.setText(student.getEmail());
+            tv_username.setText(student.getStuName());
+            tv_school.setText(student.getSchool());
+            tv_mobile.setText(student.getMobilePhoneNumber());
+            tv_email.setText(student.getEmail());
 
-            Log.i("htht", "student.getuserIcon=======================" + student.getUserIcon());
-            Log.i("htht", "student.getUserIcon().getFileUrl()========" + student.getUserIcon().getFileUrl());
-            Log.i("htht", "student.getuserIcon=======================" + student.getUserIcon().getUrl());
-
-            Glide.with(getContext())
-                    .load(student.getUserIcon().getFileUrl())
-                    .error(R.mipmap.ic_launcher)
-                    .into(cImageView);
-
+            if(student.getUserIcon() != null) {
+                Glide.with(context)
+                        .load(student.getUserIcon().getFileUrl())
+                        .error(R.mipmap.ic_launcher)
+                        .into(cImageView);
+            }
 
         }
+
+        //每一项的点击事件。。。没用做成listview，我深表遗憾
+        LinearLayout ll_username = getActivity().findViewById(R.id.ll_username);//用户名
+        ll_username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChangeMessageActivity.class);
+                intent.putExtra("changeType", CHANGE_TYPE_STU_NAME);
+                startActivityForResult(intent, STUDENT_USER_MESSAGE);
+            }
+        });
+
+        LinearLayout ll_school = getActivity().findViewById(R.id.ll_school);
+        ll_school.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChangeMessageActivity.class);
+                intent.putExtra("changeType", CHANGE_TYPE_SCHOOL);
+                startActivityForResult(intent, STUDENT_USER_MESSAGE);
+            }
+        });
+
+        LinearLayout ll_mobile = getActivity().findViewById(R.id.ll_mobile);
+        ll_mobile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChangeMessageActivity.class);
+                intent.putExtra("changeType", CHANGE_TYPE_MOBILE);
+                startActivityForResult(intent, STUDENT_USER_MESSAGE);
+            }
+        });
+
+        LinearLayout ll_email = getActivity().findViewById(R.id.ll_email);
+        ll_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChangeMessageActivity.class);
+                intent.putExtra("changeType", CHANGE_TYPE_EMAIL);
+                startActivityForResult(intent, STUDENT_USER_MESSAGE);
+            }
+        });
+
+        LinearLayout ll_password = getActivity().findViewById(R.id.ll_password);
+        ll_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChangePasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        LinearLayout ll_logout = getActivity().findViewById(R.id.ll_logout);
+        ll_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+                BmobUser.logOut();   //清除缓存用户对象
+                getActivity().finish();     //关闭当前个人中心页
+            }
+        });
+
     }
 
 
@@ -216,7 +254,7 @@ public class PersonalFragment extends Fragment {
                         IMAGE_FILE_NAME);
                 crop(Uri.fromFile(tempFile));
             } else {
-                Toast.makeText(getContext(), "未找到存储卡，无法存储照片！",
+                Toast.makeText(context, "未找到存储卡，无法存储照片！",
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -257,7 +295,7 @@ public class PersonalFragment extends Fragment {
                                     break;
 
                             }
-                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
                             Log.i("htht", "上传文件失败:错误码   " + e.getErrorCode());
                             deleteIcon(IMAGE_FILE_CROP_NAME);
                         }
@@ -267,11 +305,25 @@ public class PersonalFragment extends Fragment {
                 //检查是否拍了照片，如果拍了则删除。
                 deleteIcon(IMAGE_FILE_NAME);
             }
+        } else if (requestCode == STUDENT_USER_MESSAGE) {
+            if (resultCode == RESULT_USER_NAME) {
+                Log.i("htht", "username: " + BmobUser.getCurrentUser(Student.class).getStuName());
+                tv_username.setText(BmobUser.getCurrentUser(Student.class).getStuName());
+            } else if (resultCode == RESULT_SCHOOL) {
+                Log.i("htht", "school: " + BmobUser.getCurrentUser(Student.class).getSchool());
+                tv_school.setText(BmobUser.getCurrentUser(Student.class).getSchool());
+            } else if (resultCode == RESULT_MOBILE) {
+                Log.i("htht", "mobile: " + BmobUser.getCurrentUser(Student.class).getMobilePhoneNumber());
+                tv_mobile.setText(BmobUser.getCurrentUser(Student.class).getMobilePhoneNumber());
+            } else if (resultCode == RESULT_EMAIL) {
+                Log.i("htht", "email: " + BmobUser.getCurrentUser(Student.class).getEmail());
+                tv_email.setText(BmobUser.getCurrentUser(Student.class).getEmail());
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void deleteIcon(String path){
+    public void deleteIcon(String path) {
         //检查剪裁图片删除没有，如果没有，则删除。
         tempFile = new File(Environment.getExternalStorageDirectory(),
                 path);
