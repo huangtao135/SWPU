@@ -25,7 +25,7 @@ import com.ht.communi.activity.LoginActivity;
 import com.ht.communi.activity.R;
 import com.ht.communi.alrtdialog.ActionSheetDialog;
 import com.ht.communi.javabean.Student;
-import com.ht.communi.view.CircleImageView;
+import com.ht.communi.customView.CircleImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
