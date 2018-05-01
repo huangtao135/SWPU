@@ -135,7 +135,9 @@ public class PersonalFragment extends Fragment {
             tv_mobile.setText(student.getMobilePhoneNumber());
             tv_email.setText(student.getEmail());
 
+            Log.i("htht", "student.getUserIcon(): "+ student.getUserIcon());
             if(student.getUserIcon() != null) {
+                Log.i("htht", "student.getUserIcon().getFileUrl(): "+ student.getUserIcon().getFileUrl());
                 Glide.with(context)
                         .load(student.getUserIcon().getFileUrl())
                         .error(R.mipmap.ic_launcher)

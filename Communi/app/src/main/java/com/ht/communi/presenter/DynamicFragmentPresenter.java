@@ -20,7 +20,19 @@ public class DynamicFragmentPresenter {
     }
 
     public void onRefresh(){
-        mDynamicModel.getDynamicItem(new DynamicModelImpl.BaseListener() {
+//        mDynamicModel.getDynamicItem(new DynamicModelImpl.BaseListener() {
+//            @Override
+//            public void getSuccess(Object o) {
+//                List<DynamicItem> list= (List<DynamicItem>) o;
+//                mView.onRefresh(list);
+//            }
+//
+//            @Override
+//            public void getFailure() {
+//            }
+//        });
+
+        mDynamicModel.getDynamicItem(0, DynamicModel.STATE_REFRESH, new DynamicModelImpl.BaseListener() {
             @Override
             public void getSuccess(Object o) {
                 List<DynamicItem> list= (List<DynamicItem>) o;
@@ -29,12 +41,24 @@ public class DynamicFragmentPresenter {
 
             @Override
             public void getFailure() {
+
             }
         });
     }
 
-    public void onLoadMore(){
+    public void onLoadMore( int currPage){
+        mDynamicModel.getDynamicItem(currPage, DynamicModel.STATE_MORE, new DynamicModelImpl.BaseListener() {
+            @Override
+            public void getSuccess(Object o) {
+                List<DynamicItem> list= (List<DynamicItem>) o;
+                mView.onLoadMore(list);
+            }
 
+            @Override
+            public void getFailure() {
+
+            }
+        });
     }
 
 }

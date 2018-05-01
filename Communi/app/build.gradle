@@ -40,5 +40,8 @@ dependencies {
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    //上传图片选择框架
+    compile 'me.iwf.photopicker:PhotoPicker:0.1.8'
+
     compile project(':xListView')
 }

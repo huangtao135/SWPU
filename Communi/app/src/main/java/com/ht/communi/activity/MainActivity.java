@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.ht.communi.fragment.CommunityFragment;
 import com.ht.communi.fragment.DynamicFragment;
 import com.ht.communi.fragment.PersonalFragment;
-import com.ht.communi.customView.CustomViewPager;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private CustomViewPager viewPager;
+    private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private BottomBar bottomBar;
 
