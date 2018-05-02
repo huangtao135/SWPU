@@ -1,5 +1,6 @@
 package com.ht.communi.javabean;
 
+import java.io.Serializable;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -9,7 +10,7 @@ import cn.bmob.v3.datatype.BmobFile;
  * Created by Administrator on 2018/4/29.
  */
 
-public class DynamicItem extends BmobObject {
+public class DynamicItem extends BmobObject implements Serializable{
 
     public Student Writer;
 

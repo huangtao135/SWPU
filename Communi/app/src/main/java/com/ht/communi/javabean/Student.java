@@ -1,5 +1,7 @@
 package com.ht.communi.javabean;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 
@@ -7,7 +9,7 @@ import cn.bmob.v3.datatype.BmobFile;
  * Created by Administrator on 2018/4/17.
  */
 
-public class Student extends BmobUser {
+public class Student extends BmobUser implements Serializable{
     private String stuName;
     private String school;
     private Boolean sex;

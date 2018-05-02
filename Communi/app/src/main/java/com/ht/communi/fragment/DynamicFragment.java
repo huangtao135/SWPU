@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ht.communi.activity.DynamicDetailActivity;
 import com.ht.communi.activity.LoginActivity;
 import com.ht.communi.activity.R;
 import com.ht.communi.activity.SendDynamicActivity;
@@ -79,12 +81,13 @@ public class DynamicFragment extends Fragment implements IDynamicFragment ,XList
         xListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                DynamicItem item = mDynamicList.get(position-1);
-//                Intent intent = new Intent(getActivity(), DynamicDetailActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("DYNAMIC", item);
-//                intent.putExtras(bundle);
-//                startActivity(intent);
+                DynamicItem item = mDynamicList.get(position-1);
+                Log.i("htht", "onItemClick:====item ====="+item.getCreatedAt());
+                Intent intent = new Intent(getActivity(), DynamicDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("DYNAMIC", item);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
 
