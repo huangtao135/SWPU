@@ -12,16 +12,16 @@ import cn.bmob.v3.datatype.BmobFile;
 
 public class DynamicItem extends BmobObject implements Serializable{
 
-    public Student Writer;
+    private Student Writer;
 
     //作者描述
-    public String Text;
+    private String Text;
 
     //作者上传图片集合
-    public List<BmobFile> PhotoList;
+    private List<BmobFile> PhotoList;
 
     //作者描述文字
-    public String Detail;
+    private String Detail;
 
     public String getText() {
         return Text;

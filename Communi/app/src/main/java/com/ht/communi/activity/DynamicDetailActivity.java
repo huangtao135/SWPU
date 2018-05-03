@@ -22,8 +22,6 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
 /**
- * 作者：GXL on 2016/8/3 0003
- * 博客: http://blog.csdn.net/u014316462
  * 作用：朋友圈详细
  */
 public class DynamicDetailActivity extends Activity {

@@ -4,9 +4,17 @@
     android:layout_height="match_parent"
     tools:context="com.ht.communi.fragment.CommunityFragment">
 
-    <TextView
+    <Button
+        android:id="@+id/btn_add"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:text="加一条社团数据"
+        android:visibility="gone"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_community_list"
+        android:layout_below="@id/btn_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

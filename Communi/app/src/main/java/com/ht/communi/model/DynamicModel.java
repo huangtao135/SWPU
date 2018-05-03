@@ -55,7 +55,7 @@ public class DynamicModel implements DynamicModelImpl {
             @Override
             public void done(List<DynamicItem> list, BmobException e) {
                 if (e == null) {
-                    Log.i("htht", "done: 查询成功：共   " + list.size() + "  条数据。");
+                    Log.i("htht", "done: 查询西柚社广场成功：共   " + list.size() + "  条数据。");
                     listener.getSuccess(list);
                     if (list.size() > 0) {
                         if (actionType == STATE_REFRESH) {
@@ -67,7 +67,7 @@ public class DynamicModel implements DynamicModelImpl {
                         Log.i("htht" ,"done:没有数据 ");
                     }
                 } else {
-                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("bmob", "查询西柚社广场失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
@@ -87,10 +87,10 @@ public class DynamicModel implements DynamicModelImpl {
             @Override
             public void done(List<DynamicItem> list, BmobException e) {
                 if (e == null) {
-                    Log.i("htht", "done: 查询成功：共   " + list.size() + "  条数据。");
+                    Log.i("htht", "done: 查询西柚社广场成功：共   " + list.size() + "  条数据。");
                     listener.getSuccess(list);
                 } else {
-                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("bmob", "查询西柚社广场失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
