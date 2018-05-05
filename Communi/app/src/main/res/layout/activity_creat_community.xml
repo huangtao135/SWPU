@@ -13,11 +13,13 @@
         android:paddingTop="30dp">
 
         <ImageView
+            android:id="@+id/iv_comm"
             android:layout_width="wrap_content"
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
             android:src="@drawable/community" />
+
 
         <!-- 社团名字 -->
         <android.support.design.widget.TextInputLayout

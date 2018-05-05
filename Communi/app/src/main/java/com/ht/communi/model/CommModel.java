@@ -45,6 +45,8 @@ public class CommModel implements CommModelImpl {
                                 }
                             }
                         });
+                    }else{
+                        listener.getFailure();
                     }
 
                 }
@@ -57,6 +59,7 @@ public class CommModel implements CommModelImpl {
                         Log.i("htht", "社团创建成功，等待验证！！！");
                         listener.getSuccess(null);
                     } else {
+                        listener.getFailure();
                         Log.i("bmob", "社团创建失败！！！");
                     }
                 }
@@ -72,7 +75,7 @@ public class CommModel implements CommModelImpl {
      * @param listener
      */
     public void getCommItem(final BaseListener listener) {
-        BmobQuery<CommunityItem> query = new BmobQuery<CommunityItem>();
+        BmobQuery<CommunityItem> query = new BmobQuery<>();
         query.order("-createdAt");
         query.findObjects(new FindListener<CommunityItem>() {
             @Override
