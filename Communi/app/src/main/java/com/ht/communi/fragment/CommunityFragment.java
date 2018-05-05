@@ -1,8 +1,10 @@
 package com.ht.communi.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.ht.communi.activity.CreateCommunityActivity;
 import com.ht.communi.activity.R;
 import com.ht.communi.adapter.CommunityAdapter;
 import com.ht.communi.javabean.CommunityItem;
@@ -27,11 +31,13 @@ import cn.bmob.v3.BmobUser;
 
 public class CommunityFragment extends Fragment implements ICommunityFragment {
 
-    private List<CommunityItem> mCommunityList;
+    private SwipeRefreshLayout swipeRefreshLayout;  //刷新控件
+    private FloatingActionButton menu_add_comm;
     private RecyclerView rv_community_list;
     private CommunityAdapter communityAdapter;
     private CommunityFragmentPresenter mPresenter;
     private List<CommunityItem> mList = new ArrayList<>();  //临时容器
+    private List<CommunityItem> mCommunityList;     //真正的社团数据
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +50,7 @@ public class CommunityFragment extends Fragment implements ICommunityFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initView();
+        initRefresh();
 
         mPresenter = new CommunityFragmentPresenter(this);
         communityAdapter = new CommunityAdapter(getContext(), mList);
@@ -85,17 +92,42 @@ public class CommunityFragment extends Fragment implements ICommunityFragment {
         });
 
         rv_community_list = getActivity().findViewById(R.id.rv_community_list);
+        menu_add_comm = getActivity().findViewById(R.id.menu_add_comm);
+        menu_add_comm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), CreateCommunityActivity.class);
+                startActivity(intent);
+            }
+        });
+        swipeRefreshLayout = getActivity().findViewById(R.id.swipeRefreshLayout);
     }
 
+    private void initRefresh(){
+        // 设置下拉进度的主题颜色
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
+
+        // 下拉时触发SwipeRefreshLayout的下拉动画，动画完毕之后就会回调这个方法
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPresenter.onRefresh();
+            }
+        });
+    }
+
+    //view的onLoadMore
     @Override
     public void onLoadMore(List<CommunityItem> list) {
 
     }
 
+    //view的onRefresh
     @Override
     public void onRefresh(List<CommunityItem> list) {
         mCommunityList = list;
         communityAdapter.setDatas(mCommunityList);
         communityAdapter.notifyDataSetChanged();
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

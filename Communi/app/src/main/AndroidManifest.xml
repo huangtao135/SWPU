@@ -35,16 +35,14 @@
         <activity android:name=".ChangeMessageActivity" />
         <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".DynamicDetailActivity" />
-        <activity android:name=".SendDynamicActivity"></activity>
-
-
+        <activity android:name=".SendDynamicActivity" />
         <activity
             android:name="me.iwf.photopicker.PhotoPickerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-
         <activity
             android:name="me.iwf.photopicker.PhotoPagerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".CreateCommunityActivity"></activity>
     </application>
 
 </manifest>
