@@ -27,11 +27,11 @@ import cn.bmob.v3.BmobUser;
 
 public class CommunityFragment extends Fragment implements ICommunityFragment {
 
+    private List<CommunityItem> mCommunityList;
     private RecyclerView rv_community_list;
     private CommunityAdapter communityAdapter;
     private CommunityFragmentPresenter mPresenter;
     private List<CommunityItem> mList = new ArrayList<>();  //临时容器
-    private List<CommunityItem> mCommunityList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

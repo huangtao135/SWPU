@@ -7,11 +7,15 @@ import android.view.MotionEvent;
 
 /**
  * 解决下viewpager滑动和其中的fragment点击所产生的冲突
- *
+ * <p>
  * Created by Administrator on 2018/4/29.
  */
 
 public class CustomViewPager extends ViewPager {
+
+    private float startY;
+    private float startX;
+
     public CustomViewPager(Context context) {
         super(context);
     }
@@ -23,25 +27,32 @@ public class CustomViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         int action = ev.getAction();
-        float startY = 0f;
-        float startX = 0f;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 // 记录手指按下的位置
-                startY = ev.getY();
-                startX = ev.getX();
+                startY = ev.getRawY();
+                startX = ev.getRawX();
                 break;
             case MotionEvent.ACTION_MOVE:
-                float endY = ev.getY();
-                float endX = ev.getX();
+                float endY = ev.getRawY();
+                float endX = ev.getRawX();
+//                Log.i("htht", "onInterceptTouchEvent:=====startX=== " + startX);
+//                Log.i("htht", "onInterceptTouchEvent:=====startY===" + startY);
+//                Log.i("htht", "onInterceptTouchEvent:=====endY===" + endY);
+//                Log.i("htht", "onInterceptTouchEvent:=====endX===" + endX);
                 float distanceX = Math.abs(endX - startX);
                 float distanceY = Math.abs(endY - startY);
-                if(distanceX ==0 && distanceY==0) {
+                if (getCurrentItem() != getAdapter().getCount()-1){
+                    return super.onInterceptTouchEvent(ev);
+                }
+                if (distanceX == 0 && distanceY == 0) {
                     return false;
-                }else {
+                } else {
                     return true;
                 }
+
         }
         return super.onInterceptTouchEvent(ev);
     }
+
 }

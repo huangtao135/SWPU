@@ -7,7 +7,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.ht.communi.fragment.CommunityFragment;
+import com.ht.communi.customView.CustomViewPager;
+import com.ht.communi.fragment.CommEventFragment;
 import com.ht.communi.fragment.DynamicFragment;
 import com.ht.communi.fragment.PersonalFragment;
 import com.roughike.bottombar.BottomBar;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ViewPager viewPager;
+    private CustomViewPager viewPager;
     private List<Fragment> fragmentList;
     private BottomBar bottomBar;
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initViewPager() {
         fragmentList = new ArrayList<>();
-        fragmentList.add(new CommunityFragment());
+        fragmentList.add(new CommEventFragment());
         fragmentList.add(new DynamicFragment());
         fragmentList.add(new PersonalFragment());
         //避免切回fragment1的时候，销毁fragment3，保存fragment3的状态

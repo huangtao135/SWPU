@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="54dp"
         android:background="@color/colorPrimary" >
 
         <TextView
@@ -145,6 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:layout_marginTop="2dp"
+                android:clickable="true"
                 android:background="@drawable/actionsheet_bottom_normal"
                 android:gravity="center_vertical" >
 
