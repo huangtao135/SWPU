@@ -70,7 +70,7 @@ public class DynamicPhotoChooseAdapter extends BaseAdapter {
         albumBeanList.remove(albumBeanList.size() - 1);
         albumBeanList.addAll(mAlbumBeanList);
         albumBeanList.add(new DynamicPhotoItem("", true));
-        notifyDataSetChanged();
+//        notifyDataSetChanged();
     }
 
     public void removeData(int position) {

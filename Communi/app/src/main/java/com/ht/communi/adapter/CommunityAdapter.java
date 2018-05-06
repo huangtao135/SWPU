@@ -2,10 +2,12 @@ package com.ht.communi.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +48,10 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
+//            View view = View.inflate(mContext,R.layout.community_cardview_item, null);
+//            RecyclerView.ViewHolder holder = new NormalItemHolder(view);
+//            view.setOnClickListener(this);
+//            return holder;
             return new NormalItemHolder(mLayoutInflater.inflate(R.layout.community_cardview_item, parent, false));
         }
         return null;
@@ -60,18 +66,31 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        CommunityItem entity = mDataList.get(i);
+        final CommunityItem entity = mDataList.get(i);
         if (null == entity)
             return;
 
         if (viewHolder instanceof NormalItemHolder) {
             NormalItemHolder holder = (NormalItemHolder) viewHolder;
+            holder.commRoot.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showCommDetail(entity);
+                }
+            });
             bindNormalItem(entity,holder.commTitle, holder.commDescription, holder.commIcon);
         } else {
             NormalItemHolder holder = (NormalItemHolder) viewHolder;
+            holder.commRoot.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showCommDetail(entity);
+                }
+            });
             bindNormalItem(entity, holder.commTitle,holder.commDescription, holder.commIcon);
         }
     }
+
 
     @Override
     public int getItemCount() {
@@ -112,9 +131,12 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         commDescription.setText(entity.getCommDescription());
     }
 
-    void showCommDetail(int pos) {
+    void showCommDetail(CommunityItem item) {
 //        NewsListEntity entity = mDataList.get(pos);
 //        NewsDetailActivity.actionStart(mContext, entity.getNewsID(), entity.getRecommendAmount(), entity.getCommentAmount());
+
+
+        Log.i("htht", "onItemClick: 点中了 ==  "+item.getCommName());
     }
 
     /**
@@ -124,19 +146,18 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         TextView commTitle;
         TextView commDescription;
         ImageView commIcon;
+        LinearLayout commRoot;
+
 
         public NormalItemHolder(View itemView) {
             super(itemView);
             commTitle = itemView.findViewById(R.id.base_swipe_item_title);
             commDescription = itemView.findViewById(R.id.base_swipe_item_content);
             commIcon = itemView.findViewById(R.id.base_swipe_item_icon);
-            itemView.findViewById(R.id.base_swipe_item_container).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showCommDetail(getPosition());
-                }
-            });
+            commRoot = itemView.findViewById(R.id.base_swipe_item_container);
         }
     }
 
 }
+
+

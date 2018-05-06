@@ -40,6 +40,7 @@ public class DynamicDetailActivity extends Activity {
 
         DynamicItem dynamicItem = (DynamicItem) getIntent().getSerializableExtra("DYNAMIC");
         BmobQuery<Student> query = new BmobQuery<>();
+        Log.i("htht", "dynamicItem.getWriter().getObjectId(): "+dynamicItem.getWriter().getObjectId());
         query.addWhereEqualTo("objectId", dynamicItem.getWriter().getObjectId());
         query.setLimit(1);
         query.findObjects(new FindListener<Student>() {
@@ -47,12 +48,15 @@ public class DynamicDetailActivity extends Activity {
             public void done(List<Student> list, BmobException e) {
                 if(e ==null){
                     if(list != null && list.size() != 0){
-                        Glide.with(DynamicDetailActivity.this)
-                                .load(list.get(0).getUserIcon().getFileUrl())
-                                .placeholder(R.mipmap.ic_launcher)
-                                .error(R.mipmap.ic_launcher)
-                                .into(writePhoto);
+                        Log.i("htht", "list.get(0).getStuName(): "+list.get(0).getStuName());
                         writeName.setText(list.get(0).getStuName());
+                        if(list.get(0).getUserIcon() != null) {
+                            Glide.with(DynamicDetailActivity.this)
+                                    .load(list.get(0).getUserIcon().getFileUrl())
+                                    .placeholder(R.mipmap.ic_launcher)
+                                    .error(R.mipmap.ic_launcher)
+                                    .into(writePhoto);
+                        }
                     }
                 }else{
                     Log.i("htht", "DynamicAdapter...e.getErrorCode()=== "+e.getErrorCode()+"==="+e.getMessage());

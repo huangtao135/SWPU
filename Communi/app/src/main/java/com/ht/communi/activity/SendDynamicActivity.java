@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -26,18 +28,16 @@ import java.util.List;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
-import me.iwf.photopicker.PhotoPickerActivity;
-import me.iwf.photopicker.utils.PhotoPickerIntent;
+import me.iwf.photopicker.PhotoPicker;
 
 public class SendDynamicActivity extends AppCompatActivity {
     private TextView cancel;
     private TextView send;
+    private TextView contentCount;
     private EditText editContent;
     private GridView gridView;
     private DynamicPhotoChooseAdapter mDynamicPhotoChooseAdapter;
-    private final int REQUEST_CODE = 0x01;    //跳转选择图片请求码
 
-//    private Dialog mLoadingDialog;
     private Dialog mLoadingFinishDialog;
     private ProgressDialog mProgressDialog;
 
@@ -57,7 +57,7 @@ public class SendDynamicActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        contentCount = findViewById(R.id.tv_content_count);
         send = findViewById(R.id.tv_send);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,20 +70,38 @@ public class SendDynamicActivity extends AppCompatActivity {
     }
 
     public void init() {
-        final PhotoPickerIntent intent = new PhotoPickerIntent(SendDynamicActivity.this);
-        intent.setPhotoCount(6);
-        intent.setShowCamera(true);
+        editContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                contentCount.setText(s.length() + "/1000");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         mDynamicPhotoChooseAdapter = new DynamicPhotoChooseAdapter(SendDynamicActivity.this);
         gridView.setAdapter(mDynamicPhotoChooseAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == mDynamicPhotoChooseAdapter.getCount() - 1) {
-                    startActivityForResult(intent, REQUEST_CODE);
+                    PhotoPicker.builder()
+                            .setPhotoCount(9)
+                            .setShowCamera(true)
+                            .setShowGif(true)
+                            .setPreviewEnabled(false)
+                            .start(SendDynamicActivity.this, PhotoPicker.REQUEST_CODE);
                 }
             }
         });
-//        mLoadingDialog = DialogBuilder.createLoadingDialog(SendDynamicActivity.this, "正在上传");
         mLoadingFinishDialog = DialogBuilder.createLoadingfinishDialog(SendDynamicActivity.this, "上传完成");
         mProgressDialog = DialogBuilder.createProgressDialog(SendDynamicActivity.this);
 
@@ -94,8 +112,8 @@ public class SendDynamicActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // 选择结果回调
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            List<String> pathList = data.getStringArrayListExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS);
+        if (requestCode == PhotoPicker.REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            List<String> pathList = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
             List<DynamicPhotoItem> list = new ArrayList<>();
             if (pathList.size() != 0) {
                 for (String path : pathList) {
@@ -103,11 +121,11 @@ public class SendDynamicActivity extends AppCompatActivity {
                 }
             }
             mDynamicPhotoChooseAdapter.addData(list);
+            gridView.setAdapter(mDynamicPhotoChooseAdapter);
         }
     }
 
     private void send() {
-//        mLoadingDialog.show();
         mProgressDialog.show();
         DynamicItem dynamicItem = new DynamicItem();
         dynamicItem.setWriter(BmobUser.getCurrentUser(Student.class));
@@ -121,7 +139,6 @@ public class SendDynamicActivity extends AppCompatActivity {
         new DynamicModel().sendDynamicItem(mProgressDialog,dynamicItem, new DynamicModelImpl.BaseListener() {
             @Override
             public void getSuccess(Object o) {
-//                mLoadingDialog.dismiss();
                 mProgressDialog.dismiss();
                 mLoadingFinishDialog.show();
                 new Handler().postDelayed(new Runnable() {

@@ -54,6 +54,7 @@ public class CommunityFragment extends Fragment implements ICommunityFragment {
 
         mPresenter = new CommunityFragmentPresenter(this);
         communityAdapter = new CommunityAdapter(getContext(), mList);
+
         rv_community_list.setAdapter(communityAdapter);
         rv_community_list.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -130,4 +131,5 @@ public class CommunityFragment extends Fragment implements ICommunityFragment {
         communityAdapter.notifyDataSetChanged();
         swipeRefreshLayout.setRefreshing(false);
     }
+
 }

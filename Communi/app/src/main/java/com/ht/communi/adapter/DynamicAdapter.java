@@ -88,17 +88,24 @@ public class DynamicAdapter extends BaseAdapter {
         BmobQuery<Student> query = new BmobQuery<>();
         query.addWhereEqualTo("objectId", dynamicItem.getWriter().getObjectId());
         query.setLimit(1);
+        query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
         query.findObjects(new FindListener<Student>() {
             @Override
             public void done(List<Student> list, BmobException e) {
                 if(e ==null){
                     if(list != null && list.size() != 0){
-                        Glide.with(mContext)
-                                .load(list.get(0).getUserIcon().getFileUrl())
-                                .placeholder(R.mipmap.ic_launcher)
-                                .error(R.mipmap.ic_launcher)
-                                .into(viewHolder.write_photo);
                         viewHolder.write_name.setText(list.get(0).getStuName());
+                        if(list.get(0).getUserIcon()!= null) {
+                            Log.i("htht", "list.get(0).getUserIcon(): "+list.get(0).getUserIcon().getFileUrl());
+                            Glide.with(mContext)
+                                    .load(list.get(0).getUserIcon().getFileUrl())
+                                    .placeholder(R.mipmap.ic_launcher)
+                                    .dontAnimate()
+                                    .error(R.mipmap.ic_launcher)
+                                    .into(viewHolder.write_photo);
+                        }else{
+                            viewHolder.write_photo.setImageResource(R.mipmap.ic_launcher);
+                        }
                     }
                 }else{
                     Log.i("htht", "DynamicAdapter...e.getErrorCode()=== "+e.getErrorCode()+"==="+e.getMessage());
