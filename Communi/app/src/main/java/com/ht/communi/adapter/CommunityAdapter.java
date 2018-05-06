@@ -1,6 +1,8 @@
 package com.ht.communi.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.ht.communi.activity.CommDetailActivity;
 import com.ht.communi.activity.R;
 import com.ht.communi.javabean.CommunityItem;
 
@@ -75,7 +78,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.commRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showCommDetail(entity);
+
+                    showCommDetail(v,entity);
                 }
             });
             bindNormalItem(entity,holder.commTitle, holder.commDescription, holder.commIcon);
@@ -84,7 +88,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.commRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showCommDetail(entity);
+                    showCommDetail(v,entity);
                 }
             });
             bindNormalItem(entity, holder.commTitle,holder.commDescription, holder.commIcon);
@@ -131,10 +135,15 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         commDescription.setText(entity.getCommDescription());
     }
 
-    void showCommDetail(CommunityItem item) {
+    void showCommDetail(View v,CommunityItem item) {
 //        NewsListEntity entity = mDataList.get(pos);
 //        NewsDetailActivity.actionStart(mContext, entity.getNewsID(), entity.getRecommendAmount(), entity.getCommentAmount());
 
+        Intent intent = new Intent(v.getContext(), CommDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("COMM", item);
+        intent.putExtras(bundle);
+        v.getContext().startActivity(intent);
 
         Log.i("htht", "onItemClick: 点中了 ==  "+item.getCommName());
     }

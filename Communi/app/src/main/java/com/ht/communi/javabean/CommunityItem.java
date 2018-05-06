@@ -18,7 +18,17 @@ public class CommunityItem extends BmobObject implements Serializable{
     private String commSchool;  //属于哪个学校
     private List<Student> commMembers;
     private List<Student> commApplies;
+    private Integer likes;
     private Boolean verify;  //审核是否同意创建该社团
+
+
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
 
     public String getCommName() {
         return commName;
