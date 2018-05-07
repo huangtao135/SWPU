@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +79,7 @@ public class CommunityFragment extends Fragment implements ICommunity {
             }
         });
 
-        swipeRefreshLayout = getActivity().findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout = getActivity().findViewById(R.id.srl_comm);
     }
 
     private void initRefresh(){
@@ -103,6 +104,7 @@ public class CommunityFragment extends Fragment implements ICommunity {
     //view的onRefresh
     @Override
     public void onRefresh(List<CommunityItem> list) {
+        Log.i("htht", "CommunityItemonRefresh:刷新完成了 ");
         mCommunityList = list;
         communityAdapter.setDatas(mCommunityList);
         communityAdapter.notifyDataSetChanged();

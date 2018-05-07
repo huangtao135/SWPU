@@ -2,7 +2,6 @@ package com.ht.communi.model;
 
 import android.util.Log;
 
-import com.ht.communi.javabean.CommunityItem;
 import com.ht.communi.javabean.EventItem;
 import com.ht.communi.model.impl.EventModelImpl;
 
@@ -46,16 +45,17 @@ public class EventModel implements EventModelImpl {
      * @param listener
      */
     public void getEventItem(final BaseListener listener) {
-        BmobQuery<CommunityItem> query = new BmobQuery<>();
+        BmobQuery<EventItem> query = new BmobQuery<>();
         query.order("-createdAt");
-        query.findObjects(new FindListener<CommunityItem>() {
+        query.findObjects(new FindListener<EventItem>() {
             @Override
-            public void done(List<CommunityItem> list, BmobException e) {
+            public void done(List<EventItem> list, BmobException e) {
                 if (e == null) {
                     Log.i("htht", "done: 查询社团成功：共   " + list.size() + "  条数据。");
                     listener.getSuccess(list);
                 } else {
                     Log.i("htht", "查询社团失败：" + e.getMessage() + "," + e.getErrorCode());
+                    listener.getFailure();
                 }
             }
         });
