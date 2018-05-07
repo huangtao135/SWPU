@@ -67,7 +67,7 @@ public class DynamicModel implements DynamicModelImpl {
                         Log.i("htht" ,"done:没有数据 ");
                     }
                 } else {
-                    Log.i("bmob", "查询西柚社广场失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("htht", "查询西柚社广场失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
@@ -90,7 +90,7 @@ public class DynamicModel implements DynamicModelImpl {
                     Log.i("htht", "done: 查询西柚社广场成功：共   " + list.size() + "  条数据。");
                     listener.getSuccess(list);
                 } else {
-                    Log.i("bmob", "查询西柚社广场失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("htht", "查询西柚社广场失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
@@ -113,7 +113,7 @@ public class DynamicModel implements DynamicModelImpl {
                     Log.i("htht", "done: 查询成功：共   " + list.size() + "  条数据。");
                     listener.getSuccess(list);
                 } else {
-                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("htht", "失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
@@ -129,7 +129,7 @@ public class DynamicModel implements DynamicModelImpl {
             final String[] array = new String[dynamicitem.getPhotoList().size()];
             for (int i = 0; i < dynamicitem.getPhotoList().size(); i++) {
                 array[i] = dynamicitem.getPhotoList().get(i).getLocalFile().getAbsolutePath();
-                Log.i("path", "sendDynamicItem: " + array[i] + " " + dynamicitem.getPhotoList().size());
+                Log.i("htht", "sendDynamicItem: " + array[i] + " " + dynamicitem.getPhotoList().size());
             }
             BmobFile.uploadBatch(array, new UploadBatchListener() {
                 @Override
@@ -143,7 +143,7 @@ public class DynamicModel implements DynamicModelImpl {
                                     Log.i("htht", "上传发送的朋友圈图片成功！！！");
                                     listener.getSuccess(null);
                                 } else {
-                                    Log.i("bmob", "上传发送的朋友圈图片失败！！！");
+                                    Log.i("htht", "上传发送的朋友圈图片失败！！！");
                                 }
                             }
                         });
@@ -153,7 +153,7 @@ public class DynamicModel implements DynamicModelImpl {
 
                 @Override
                 public void onError(int statuscode, String errormsg) {
-                    Log.i("TAG", "onError: " + errormsg + statuscode);
+                    Log.i("htht", "onError: " + errormsg + statuscode);
                 }
 
                 @Override
@@ -176,7 +176,7 @@ public class DynamicModel implements DynamicModelImpl {
                         Log.i("htht", "上传发送的朋友圈消息成功！！！");
                         listener.getSuccess(null);
                     } else {
-                        Log.i("bmob", "上传发送的朋友圈消息失败！！！");
+                        Log.i("htht", "上传发送的朋友圈消息失败！！！");
                     }
                 }
             });

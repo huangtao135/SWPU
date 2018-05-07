@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Administrator on 2018/5/3.
  */
 
-public interface ICommunityFragment {
+public interface ICommunity {
     //加载更多
     void onLoadMore(List<CommunityItem> list);
 

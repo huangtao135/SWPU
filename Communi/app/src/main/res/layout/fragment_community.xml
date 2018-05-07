@@ -5,21 +5,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ht.communi.fragment.CommunityFragment">
 
-
-    <Button
-        android:id="@+id/btn_add"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="加一条社团数据"
-        android:visibility="gone"/>
-
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_community_list"
-            android:layout_below="@id/btn_add"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

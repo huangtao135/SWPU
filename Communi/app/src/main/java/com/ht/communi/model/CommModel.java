@@ -41,7 +41,7 @@ public class CommModel implements CommModelImpl {
                                     Log.i("htht", "社团创建成功，等待验证！！！");
                                     listener.getSuccess(null);
                                 } else {
-                                    Log.i("bmob", "社团创建失败！！！");
+                                    Log.i("htht", "社团创建失败！！！");
                                 }
                             }
                         });
@@ -60,7 +60,7 @@ public class CommModel implements CommModelImpl {
                         listener.getSuccess(null);
                     } else {
                         listener.getFailure();
-                        Log.i("bmob", "社团创建失败！！！");
+                        Log.i("htht", "社团创建失败！！！");
                     }
                 }
             });
@@ -84,7 +84,7 @@ public class CommModel implements CommModelImpl {
                     Log.i("htht", "done: 查询社团成功：共   " + list.size() + "  条数据。");
                     listener.getSuccess(list);
                 } else {
-                    Log.i("bmob", "查询社团失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("htht", "查询社团失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });

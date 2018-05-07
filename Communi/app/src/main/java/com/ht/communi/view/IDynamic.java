@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 作用：DynamicFragment的View接口
  */
-public interface IDynamicFragment {
+public interface IDynamic {
     //加载更多
     void onLoadMore(List<DynamicItem> list);
 

@@ -46,5 +46,8 @@ dependencies {
     //点赞按钮
     compile 'com.sackcentury:shinebutton:0.2.0'
 
+    //时间选择
+    compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
+
     compile project(':xListView')
 }

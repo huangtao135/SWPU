@@ -43,6 +43,7 @@
             android:name="me.iwf.photopicker.PhotoPagerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".CreateCommunityActivity" />
+        <activity android:name=".CreateEventActivity" />
         <activity android:name=".CommDetailActivity"></activity>
     </application>
 

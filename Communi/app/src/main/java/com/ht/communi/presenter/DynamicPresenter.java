@@ -4,18 +4,18 @@ package com.ht.communi.presenter;
 import com.ht.communi.javabean.DynamicItem;
 import com.ht.communi.model.DynamicModel;
 import com.ht.communi.model.impl.DynamicModelImpl;
-import com.ht.communi.view.IDynamicFragment;
+import com.ht.communi.view.IDynamic;
 
 import java.util.List;
 
 /**
  * 作用：朋友圈的Presenter
  */
-public class DynamicFragmentPresenter {
+public class DynamicPresenter {
     private DynamicModel mDynamicModel = new DynamicModel();
-    private IDynamicFragment mView;
+    private IDynamic mView;
 
-    public DynamicFragmentPresenter(IDynamicFragment mView) {
+    public DynamicPresenter(IDynamic mView) {
         this.mView = mView;
     }
 

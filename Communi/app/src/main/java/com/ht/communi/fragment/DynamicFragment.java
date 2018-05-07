@@ -22,9 +22,9 @@ import com.ht.communi.activity.SendDynamicActivity;
 import com.ht.communi.adapter.DynamicAdapter;
 import com.ht.communi.javabean.DynamicItem;
 import com.ht.communi.javabean.Student;
-import com.ht.communi.presenter.DynamicFragmentPresenter;
+import com.ht.communi.presenter.DynamicPresenter;
 import com.ht.communi.utils.NetUtil;
-import com.ht.communi.view.IDynamicFragment;
+import com.ht.communi.view.IDynamic;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.List;
 import cn.bmob.v3.BmobUser;
 import me.maxwin.view.XListView;
 
-public class DynamicFragment extends Fragment implements IDynamicFragment ,XListView.IXListViewListener{
+public class DynamicFragment extends Fragment implements IDynamic,XListView.IXListViewListener{
 
     private ImageView publish;
     private TextView title;
@@ -42,7 +42,7 @@ public class DynamicFragment extends Fragment implements IDynamicFragment ,XList
     private RelativeLayout loading;
     private LinearLayout tip;
 
-    private DynamicFragmentPresenter mPresenter;
+    private DynamicPresenter mPresenter;
     private DynamicAdapter mAdapter;
     private List<DynamicItem> mList = new ArrayList<>();
     private List<DynamicItem> mDynamicList;
@@ -66,7 +66,7 @@ public class DynamicFragment extends Fragment implements IDynamicFragment ,XList
         xListView.setPullLoadEnable(true);
         xListView.setXListViewListener(this);
 
-        mPresenter = new DynamicFragmentPresenter(this);
+        mPresenter = new DynamicPresenter(this);
         mAdapter = new DynamicAdapter(getActivity(), R.layout.dynamic_listviewother_item, mList);
         xListView.setAdapter(mAdapter);
 

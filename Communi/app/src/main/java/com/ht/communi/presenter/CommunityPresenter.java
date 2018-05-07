@@ -3,7 +3,7 @@ package com.ht.communi.presenter;
 import com.ht.communi.javabean.CommunityItem;
 import com.ht.communi.model.CommModel;
 import com.ht.communi.model.impl.CommModelImpl;
-import com.ht.communi.view.ICommunityFragment;
+import com.ht.communi.view.ICommunity;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ import java.util.List;
  * Created by Administrator on 2018/5/3.
  */
 
-public class CommunityFragmentPresenter {
+public class CommunityPresenter {
     private CommModel mCommModel = new CommModel();
-    private ICommunityFragment mView;
+    private ICommunity mView;
 
-    public CommunityFragmentPresenter(ICommunityFragment mView) {
+    public CommunityPresenter(ICommunity mView) {
         this.mView = mView;
     }
 

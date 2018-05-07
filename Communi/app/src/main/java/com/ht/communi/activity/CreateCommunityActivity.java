@@ -249,6 +249,7 @@ public class CreateCommunityActivity extends AppCompatActivity {
 
         //没有添加社团图片的情况
         if(bitmap == null){
+            Toast.makeText(context,"请添加一张社团图片吧！",Toast.LENGTH_SHORT).show();
             return;
         }
 
