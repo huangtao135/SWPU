@@ -101,14 +101,13 @@
                         app:small_shine_color="#CC9999"
                         app:shine_count="8"
                         app:siShape="@raw/like"/>
-                    <TextView
+                    <com.ht.communi.customView.RiseNumberTextView
                         android:id="@+id/tv_likes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:textSize="30sp"
-                        android:textColor="@color/colorGrayText"
-                        android:text="0"/>
+                        android:textColor="@color/colorGrayText" />
                 </LinearLayout>
 
 

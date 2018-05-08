@@ -9,20 +9,22 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.ht.communi.customView.ResizableImageView;
+import com.ht.communi.customView.RiseNumberTextView;
 import com.ht.communi.javabean.CommunityItem;
+import com.ht.communi.model.CommModel;
+import com.ht.communi.model.impl.CommModelImpl;
 import com.sackcentury.shinebuttonlib.ShineButton;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 
 public class CommDetailActivity extends AppCompatActivity {
-
     private TextView tv_comm_detail_title;
     private TextView tv_comm_detail_school;
     private TextView tv_comm_detail_content;
     private ResizableImageView iv_comm_icon;
     private ShineButton shineButton;
-    private TextView tv_likes;
+    private RiseNumberTextView tv_likes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +38,18 @@ public class CommDetailActivity extends AppCompatActivity {
             shineButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(View view, boolean checked) {
-                    Log.i("htht", "点赞了吗: "+checked);
-                    if(checked){
-                        tv_likes.setText(Integer.parseInt(tv_likes.getText().toString())+1 +"");
+                    Log.i("htht", "点赞了吗: " + checked);
+                    if (checked) {
+                        tv_likes.setText(Integer.parseInt(tv_likes.getText().toString()) + 1 + "");
                         communityItem.increment("likes");
-                    }else{
-                        tv_likes.setText(Integer.parseInt(tv_likes.getText().toString())-1 +"");
-                        communityItem.increment("likes",-1);
+                    } else {
+                        tv_likes.setText(Integer.parseInt(tv_likes.getText().toString()) - 1 + "");
+                        communityItem.increment("likes", -1);
                     }
                     communityItem.update(new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
-                            if(e == null){
+                            if (e == null) {
                                 Log.i("htht", "点赞成功！！ ");
                             }
                         }
@@ -59,18 +61,32 @@ public class CommDetailActivity extends AppCompatActivity {
         tv_comm_detail_title.setText(communityItem.getCommName());
         tv_comm_detail_school.setText(communityItem.getCommSchool());
         tv_comm_detail_content.setText(communityItem.getCommDescription());
-        Log.i("htht", "communityItem.getLikes(): "+communityItem.getLikes());
-        if(communityItem.getLikes() != null){
-            tv_likes.setText(communityItem.getLikes()+"");
-        }
-        if(communityItem.getCommIcon() != null) {
+
+        new CommModel().getCommLikes(communityItem, new CommModelImpl.BaseListener() {
+            @Override
+            public void getSuccess(Object o) {
+                Integer likes = ((CommunityItem) o).getLikes();
+                if (likes != null) {
+                    tv_likes.setInteger(0,likes);
+                    tv_likes.start();
+                }
+
+            }
+
+            @Override
+            public void getFailure() {
+
+            }
+        });
+
+        if (communityItem.getCommIcon() != null) {
             Glide.with(CommDetailActivity.this)
                     .load(communityItem.getCommIcon().getFileUrl())
                     .into(iv_comm_icon);
         }
     }
 
-    private void initView(){
+    private void initView() {
         ImageView back = findViewById(R.id.iv_back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -11,6 +11,7 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
@@ -85,6 +86,23 @@ public class CommModel implements CommModelImpl {
                     listener.getSuccess(list);
                 } else {
                     Log.i("htht", "查询社团失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
+    }
+
+    public void getCommLikes(CommunityItem item,final BaseListener listener){
+        BmobQuery<CommunityItem> query = new BmobQuery<>();
+        query.getObject(item.getObjectId(), new QueryListener<CommunityItem>() {
+            @Override
+            public void done(CommunityItem communityItem, BmobException e) {
+                if(e==null){
+                    //获得playerName的信息
+                    communityItem.getLikes();
+                    listener.getSuccess(communityItem);
+                }else{
+                    listener.getFailure();
+                    Log.i("htht","失败："+e.getMessage()+","+e.getErrorCode());
                 }
             }
         });
