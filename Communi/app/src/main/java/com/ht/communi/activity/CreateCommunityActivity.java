@@ -33,6 +33,9 @@ import java.io.IOException;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobRelation;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class CreateCommunityActivity extends AppCompatActivity {
 
@@ -247,12 +250,6 @@ public class CreateCommunityActivity extends AppCompatActivity {
             return;
         }
 
-        //没有添加社团图片的情况
-        if(bitmap == null){
-            Toast.makeText(context,"请添加一张社团图片吧！",Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         btn_create_comm.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(context,
@@ -266,19 +263,47 @@ public class CreateCommunityActivity extends AppCompatActivity {
         String description = ed_comm_description.getText().toString();
 
         //将图片设置完之后，还要上传网络
-        bmobFile = new BmobFile(saveBitmapFile(bitmap));
-        CommunityItem communityItem = new CommunityItem();
+
+        final CommunityItem communityItem = new CommunityItem();
         communityItem.setCommDescription(description);
-        communityItem.setCommIcon(bmobFile);
+        if(bitmap != null){
+            bmobFile = new BmobFile(saveBitmapFile(bitmap));
+            communityItem.setCommIcon(bmobFile);
+        }
+
         communityItem.setCommSchool(school);
         communityItem.setCommLeader(BmobUser.getCurrentUser(Student.class));
         communityItem.setCommName(name);
         communityItem.setVerify(new Boolean(false));
+
+
+        //当前用户。也是当前社团你的第一个成员
+        BmobRelation bmobRelation = new BmobRelation();
+        bmobRelation.add(BmobUser.getCurrentUser(Student.class));
+        communityItem.setCommMembers(bmobRelation);
         new CommModel().addCommItem(communityItem, new CommModelImpl.BaseListener() {
             @Override
             public void getSuccess(Object o) {
                 deleteIcon(IMAGE_FILE_CROP_NAME);
                 onSignupSuccess();
+
+                //修改当前用户，加入社团字段  的信息
+                Student newUser = new Student();
+                BmobRelation relation = new BmobRelation();
+                //将用户B添加到多对多关联中
+                relation.add(communityItem);
+                newUser.setCommunities(relation);
+                newUser.update(BmobUser.getCurrentUser(Student.class).getObjectId(),new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        if (e == null) {
+                            Log.i("bmob", "user BmobRelation");
+                        } else {
+                            Log.i("bmob", "失败：" + e.getMessage());
+                        }
+                    }
+                });
+
             }
 
             @Override
@@ -286,6 +311,8 @@ public class CreateCommunityActivity extends AppCompatActivity {
                 deleteIcon(IMAGE_FILE_CROP_NAME);
             }
         });
+
+
         //检查是否拍了照片，如果拍了则删除。
         deleteIcon(IMAGE_FILE_NAME);
     }

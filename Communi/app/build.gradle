@@ -49,5 +49,8 @@ dependencies {
     //时间选择
     compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
 
+    //read more Text
+    compile 'com.borjabravo:readmoretextview:2.1.0'
+
     compile project(':xListView')
 }

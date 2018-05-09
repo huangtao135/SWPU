@@ -46,7 +46,7 @@ public class EventModel implements EventModelImpl {
      */
     public void getEventItem(final BaseListener listener) {
         BmobQuery<EventItem> query = new BmobQuery<>();
-        query.order("-createdAt");
+        query.order("-eventStart");
         query.findObjects(new FindListener<EventItem>() {
             @Override
             public void done(List<EventItem> list, BmobException e) {

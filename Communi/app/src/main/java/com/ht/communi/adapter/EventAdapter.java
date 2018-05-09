@@ -1,19 +1,22 @@
 package com.ht.communi.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.ht.communi.activity.CommDetailActivity;
+import com.borjabravo.readmoretextview.ReadMoreTextView;
 import com.ht.communi.activity.R;
 import com.ht.communi.javabean.EventItem;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +26,7 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int NORMAL_ITEM = 0;
+    private static final int GROUP_ITEM = 1;
 
     private Context mContext;
     private List<EventItem> mDataList;
@@ -49,13 +53,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
-//            View view = View.inflate(mContext,R.layout.community_cardview_item, null);
-//            RecyclerView.ViewHolder holder = new NormalItemHolder(view);
-//            view.setOnClickListener(this);
-//            return holder;
             return new NormalItemHolder(mLayoutInflater.inflate(R.layout.event_cardview_item, parent, false));
         }
-        return null;
+        else{
+            return new GroupItemHolder(mLayoutInflater.inflate(R.layout.event_cardview_title_item, parent, false));
+        }
     }
 
 
@@ -71,18 +73,22 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (null == entity)
             return;
 
-        if (viewHolder instanceof NormalItemHolder) {
-            NormalItemHolder holder = (NormalItemHolder) viewHolder;
-            holder.commRoot.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    showCommDetail(v,entity);
-                }
-            });
-            holder.commTitle.setText(entity.getEventName());
-            holder.commDescription.setText(entity.getEventContent());
-        } else {
+        if(viewHolder instanceof GroupItemHolder){
+            GroupItemHolder holder = (GroupItemHolder) viewHolder;
+            holder.eventTitle.setText(entity.getEventName());
+            holder.eventDescription.setText(entity.getEventContent());
+            holder.eventPlace.setText(entity.getEventPlace());
+            holder.eventStart.setText(entity.getEventStart().getDate().toString());
+            holder.eventEnd.setText(entity.getEventEnd().getDate().toString());
+            holder.eventTime.setText(FriendlyDate(entity.getEventStart().getDate()));
 
+        }else if (viewHolder instanceof NormalItemHolder) {
+            NormalItemHolder holder = (NormalItemHolder) viewHolder;
+            holder.eventTitle.setText(entity.getEventName());
+            holder.eventDescription.setText(entity.getEventContent());
+            holder.eventPlace.setText(entity.getEventPlace());
+            holder.eventStart.setText(entity.getEventStart().getDate().toString());
+            holder.eventEnd.setText(entity.getEventEnd().getDate().toString());
         }
     }
 
@@ -101,7 +107,16 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         //第一个要显示时间
-        return NORMAL_ITEM;
+        if (position == 0)
+            return GROUP_ITEM;
+
+        String currentDate = mDataList.get(position).getEventStart().getDate();
+        Log.i("htht", "currentDate: "+currentDate+"          position:"+ position);
+        Log.i("htht", "currentDate: "+currentDate+"          position:"+ position);
+        int prevIndex = position - 1;
+        int isDifferent = daysOfTwo(strToDate(mDataList.get(prevIndex).getEventStart().getDate()),strToDate(currentDate)) ;
+//        boolean isDifferent = !mDataList.get(prevIndex).getEventStart().getDate().equals(currentDate);
+        return isDifferent != 0 ? GROUP_ITEM : NORMAL_ITEM;
     }
 
     @Override
@@ -109,29 +124,83 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return position;
     }
 
-
-    void showCommDetail(View v,EventItem item) {
-        Intent intent = new Intent(v.getContext(), CommDetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("COMM", item);
-        intent.putExtras(bundle);
-        v.getContext().startActivity(intent);
-    }
-
     /**
      * 新闻标题
      */
     public class NormalItemHolder extends RecyclerView.ViewHolder {
-        TextView commTitle;
-        TextView commDescription;
-        LinearLayout commRoot;
+        TextView eventTitle;
+        ReadMoreTextView eventDescription;
+        LinearLayout eventRoot;
+        TextView eventPlace;
+        TextView eventStart;
+        TextView eventEnd;
 
 
         public NormalItemHolder(View itemView) {
             super(itemView);
-            commTitle = itemView.findViewById(R.id.event_item_title);
-            commDescription = itemView.findViewById(R.id.event_item_content);
-            commRoot = itemView.findViewById(R.id.event_item_container);
+            eventTitle = itemView.findViewById(R.id.event_item_title);
+            eventDescription = itemView.findViewById(R.id.event_item_content);
+            eventRoot = itemView.findViewById(R.id.event_item_container);
+            eventPlace = itemView.findViewById(R.id.event_item_place);
+            eventStart = itemView.findViewById(R.id.event_item_start_time);
+            eventEnd = itemView.findViewById(R.id.event_item_end_time);
         }
+    }
+
+
+    /**
+     * 带日期新闻标题
+     */
+    public class GroupItemHolder extends NormalItemHolder {
+        TextView eventTime;
+
+        public GroupItemHolder(View itemView) {
+            super(itemView);
+            eventTime = (TextView) itemView.findViewById(R.id.event_group_time);
+        }
+    }
+
+
+    public static int daysOfTwo(Date originalDate, Date compareDateDate) {
+        Calendar aCalendar = Calendar.getInstance();
+        aCalendar.setTime(originalDate);
+        int originalDay = aCalendar.get(Calendar.DAY_OF_YEAR);
+        aCalendar.setTime(compareDateDate);
+        int compareDay = aCalendar.get(Calendar.DAY_OF_YEAR);
+
+        return originalDay - compareDay;
+    }
+
+    public static String FriendlyDate(String strDate) {
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟
+//        Date date = new Date();
+//        Date nowDate = new Date();
+//        try {
+//            date = sdf.parse(strDate);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+        Date nowDate = new Date();
+        Date date = strToDate(strDate);
+        int dayDiff = daysOfTwo(nowDate, date);
+        if(dayDiff == 0){
+            return "今日";
+        }else if(dayDiff < 0){
+            return Math.abs(dayDiff)+"天后";
+        }else{
+            return Math.abs(dayDiff)+"天前";
+        }
+    }
+
+    //将字符串转换为Date
+    public static Date strToDate(String strDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟
+        Date date = new Date();
+        try {
+            date = sdf.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }

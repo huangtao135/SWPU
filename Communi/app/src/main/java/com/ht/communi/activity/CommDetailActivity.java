@@ -33,6 +33,27 @@ public class CommDetailActivity extends AppCompatActivity {
         initView();
 
         final CommunityItem communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM");
+
+
+        //测试代码
+//        BmobRelation relation1 = new BmobRelation();
+//        //将用户B添加到多对多关联中
+//        relation1.add(BmobUser.getCurrentUser(Student.class));
+//        //多对多关联指向`post`的`likes`字段
+//        communityItem.setCommMembers(relation1);
+//        communityItem.update(new UpdateListener() {
+//
+//            @Override
+//            public void done(BmobException e) {
+//                if (e == null) {
+//                    Log.i("bmob", "comm BmobRelation");
+//                } else {
+//                    Log.i("bmob", "失败：" + e.getMessage());
+//                }
+//            }
+//        });
+
+
         if (shineButton != null) {
             shineButton.init(CommDetailActivity.this);
             shineButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
@@ -67,7 +88,7 @@ public class CommDetailActivity extends AppCompatActivity {
             public void getSuccess(Object o) {
                 Integer likes = ((CommunityItem) o).getLikes();
                 if (likes != null) {
-                    tv_likes.setInteger(0,likes);
+                    tv_likes.setInteger(0, likes);
                     tv_likes.start();
                 }
 
@@ -84,6 +105,8 @@ public class CommDetailActivity extends AppCompatActivity {
                     .load(communityItem.getCommIcon().getFileUrl())
                     .into(iv_comm_icon);
         }
+
+
     }
 
     private void initView() {

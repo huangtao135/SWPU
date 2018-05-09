@@ -3,12 +3,14 @@ package com.ht.communi.model;
 import android.util.Log;
 
 import com.ht.communi.javabean.CommunityItem;
+import com.ht.communi.javabean.Student;
 import com.ht.communi.model.impl.CommModelImpl;
 
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
@@ -25,7 +27,7 @@ public class CommModel implements CommModelImpl {
      *
      * @param communityItem 社团item
      */
-    public void addCommItem( final CommunityItem communityItem, final BaseListener listener) {
+    public void addCommItem(final CommunityItem communityItem, final BaseListener listener) {
         final BmobFile commIcon = communityItem.getCommIcon();
         if (commIcon != null) {
             commIcon.uploadblock(new UploadFileListener() {
@@ -46,7 +48,7 @@ public class CommModel implements CommModelImpl {
                                 }
                             }
                         });
-                    }else{
+                    } else {
                         listener.getFailure();
                     }
 
@@ -91,20 +93,50 @@ public class CommModel implements CommModelImpl {
         });
     }
 
-    public void getCommLikes(CommunityItem item,final BaseListener listener){
+    /**
+     * 查找某个社团的点赞数
+     *
+     * @param item
+     * @param listener
+     */
+    public void getCommLikes(CommunityItem item, final BaseListener listener) {
         BmobQuery<CommunityItem> query = new BmobQuery<>();
         query.getObject(item.getObjectId(), new QueryListener<CommunityItem>() {
             @Override
             public void done(CommunityItem communityItem, BmobException e) {
-                if(e==null){
+                if (e == null) {
                     //获得playerName的信息
                     communityItem.getLikes();
                     listener.getSuccess(communityItem);
-                }else{
+                } else {
                     listener.getFailure();
-                    Log.i("htht","失败："+e.getMessage()+","+e.getErrorCode());
+                    Log.i("htht", "失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
+    }
+
+    /**
+     * 查询加入某个社团的所有用户
+     *
+     * @param item
+     * @param listener
+     */
+    public void getMyCommItem(CommunityItem item, final BaseListener listener) {
+        BmobQuery<Student> query = new BmobQuery<>();
+        query.addWhereRelatedTo("commMembers", new BmobPointer(item));
+        query.findObjects(new FindListener<Student>() {
+            @Override
+            public void done(List<Student> list, BmobException e) {
+                if (e == null) {
+                    Log.i("htht", "done: 查询社团用户成功：共   " + list.size() + "  条数据。");
+                    listener.getSuccess(list);
+                } else {
+                    listener.getFailure();
+                    Log.i("htht", "查询社团用户失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
+
     }
 }

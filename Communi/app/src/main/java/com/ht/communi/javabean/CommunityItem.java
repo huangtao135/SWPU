@@ -1,10 +1,10 @@
 package com.ht.communi.javabean;
 
 import java.io.Serializable;
-import java.util.List;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobRelation;
 
 /**
  * Created by Administrator on 2018/5/3.
@@ -16,8 +16,8 @@ public class CommunityItem extends BmobObject implements Serializable{
     private BmobFile commIcon;
     private Student commLeader;
     private String commSchool;  //属于哪个学校
-    private List<Student> commMembers;
-    private List<Student> commApplies;
+    private BmobRelation commMembers;
+    private BmobRelation commApplies;
     private Integer likes;
     private Boolean verify;  //审核是否同意创建该社团
 
@@ -70,19 +70,19 @@ public class CommunityItem extends BmobObject implements Serializable{
         this.commLeader = commLeader;
     }
 
-    public List<Student> getCommMembers() {
+    public BmobRelation getCommMembers() {
         return commMembers;
     }
 
-    public void setCommMembers(List<Student> commMembers) {
+    public void setCommMembers(BmobRelation commMembers) {
         this.commMembers = commMembers;
     }
 
-    public List<Student> getCommApplies() {
+    public BmobRelation getCommApplies() {
         return commApplies;
     }
 
-    public void setCommApplies(List<Student> commApplies) {
+    public void setCommApplies(BmobRelation commApplies) {
         this.commApplies = commApplies;
     }
 
