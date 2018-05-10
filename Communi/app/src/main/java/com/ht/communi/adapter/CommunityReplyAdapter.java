@@ -1,7 +1,6 @@
 package com.ht.communi.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,38 +10,37 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.ht.communi.activity.R;
 import com.ht.communi.customView.CircleImageView;
-import com.ht.communi.customView.FixedGridView;
-import com.ht.communi.javabean.DynamicItem;
+import com.ht.communi.javabean.CommunityReplyItem;
 
 import java.util.List;
 
 /**
- * 作用：朋友圈的adapter
+ * Created by Administrator on 2018/5/10.
  */
-public class DynamicAdapter extends BaseAdapter {
 
+public class CommunityReplyAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
-    private List<DynamicItem> mDatas;
+    private List<CommunityReplyItem> mDatas;
     private int mLayoutRes;
     private Context mContext;
 
-    public DynamicAdapter(Context context, int layoutRes, List<DynamicItem> datas) {
-        this.mContext=context;
+    public CommunityReplyAdapter(Context context, int layoutRes, List<CommunityReplyItem> datas) {
+        this.mContext = context;
         this.mDatas = datas;
         this.mLayoutRes = layoutRes;
         mInflater = LayoutInflater.from(context);
     }
 
 
-    public List<DynamicItem> returnmDatas() {
+    public List<CommunityReplyItem> returnmDatas() {
         return this.mDatas;
     }
 
-    public void addAll(List<DynamicItem> mDatas) {
+    public void addAll(List<CommunityReplyItem> mDatas) {
         this.mDatas.addAll(mDatas);
     }
 
-    public void setDatas(List<DynamicItem> mDatas) {
+    public void setDatas(List<CommunityReplyItem> mDatas) {
         this.mDatas.clear();
         this.mDatas.addAll(mDatas);
     }
@@ -68,21 +66,20 @@ public class DynamicAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(mLayoutRes, null);
             holder = new ViewHolder();
-            holder.write_photo = (CircleImageView) convertView.findViewById(R.id.write_photo);
-            holder.write_name = (TextView) convertView.findViewById(R.id.write_name);
-            holder.write_date = (TextView) convertView.findViewById(R.id.write_date);
-            holder.dynamic_text = (TextView) convertView.findViewById(R.id.dynamic_text);
-            holder.dynamic_photo = (FixedGridView) convertView.findViewById(R.id.dynamic_photo);
+            holder.write_photo = (CircleImageView) convertView.findViewById(R.id.comm_reply_stuIcon_item);
+            holder.write_name = (TextView) convertView.findViewById(R.id.comm_reply_stuName_item);
+            holder.write_date = (TextView) convertView.findViewById(R.id.comm_reply_time_item);
+            holder.dynamic_text = (TextView) convertView.findViewById(R.id.comm_reply_text_item);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        DynamicItem dynamicItem = mDatas.get(position);
+        CommunityReplyItem CommunityReplyItem = mDatas.get(position);
         final ViewHolder viewHolder = holder;
 
-        //不用自己再查一遍了，在官网发现了include。。。。
+        //不用再查一遍了，在官网发现了include。。。。
 //        BmobQuery<Student> query = new BmobQuery<>();
-//        query.addWhereEqualTo("objectId", dynamicItem.getWriter().getObjectId());
+//        query.addWhereEqualTo("objectId", CommunityReplyItem.getStudent().getObjectId());
 //        query.setLimit(1);
 //        query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
 //        query.findObjects(new FindListener<Student>() {
@@ -104,26 +101,25 @@ public class DynamicAdapter extends BaseAdapter {
 //                        }
 //                    }
 //                }else{
-//                    Log.i("htht", "DynamicAdapter...e.getErrorCode()=== "+e.getErrorCode()+"==="+e.getMessage());
+//                    Log.i("htht", "CommunityReplyAdapter...e.getErrorCode()=== "+e.getErrorCode()+"==="+e.getMessage());
 //                }
 //            }
 //        });
-        if(dynamicItem.getWriter().getUserIcon()!= null) {
-            Log.i("htht", "list.get(0).getUserIcon(): " + dynamicItem.getWriter().getUserIcon().getFileUrl());
+
+
+        if (CommunityReplyItem.getStudent().getUserIcon() != null) {
             Glide.with(mContext)
-                    .load(dynamicItem.getWriter().getUserIcon().getFileUrl())
+                    .load(CommunityReplyItem.getStudent().getUserIcon().getFileUrl())
                     .placeholder(R.mipmap.ic_launcher)
                     .dontAnimate()
                     .error(R.mipmap.ic_launcher)
                     .into(viewHolder.write_photo);
-        } else {
+        }else {
             viewHolder.write_photo.setImageResource(R.mipmap.ic_launcher);
         }
-        viewHolder.write_name.setText(dynamicItem.getWriter().getStuName());
-
-        viewHolder.write_date.setText(dynamicItem.getCreatedAt());
-        holder.dynamic_text.setText(dynamicItem.getText());
-        holder.dynamic_photo.setAdapter(new DynamicPhotoAdapter(mContext,R.layout.dynamic_gridview_item,dynamicItem.getPhotoList()));
+        viewHolder.write_name.setText(CommunityReplyItem.getStudent().getStuName());
+        viewHolder.write_date.setText(CommunityReplyItem.getCreatedAt());
+        holder.dynamic_text.setText(CommunityReplyItem.getContent());
         return convertView;
     }
 
@@ -132,6 +128,5 @@ public class DynamicAdapter extends BaseAdapter {
         TextView write_name;
         TextView write_date;
         TextView dynamic_text;
-        FixedGridView dynamic_photo;
     }
 }

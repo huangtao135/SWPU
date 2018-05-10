@@ -38,6 +38,7 @@ public class DynamicModel implements DynamicModelImpl {
 
         BmobQuery<DynamicItem> query = new BmobQuery<>();
         // 按时间降序查询
+        query.include("Writer");
         query.order("-createdAt");
         // 如果是加载更多
         if (actionType == STATE_MORE) {
@@ -82,6 +83,7 @@ public class DynamicModel implements DynamicModelImpl {
     @Override
     public void getDynamicItem(final BaseListener listener) {
         BmobQuery<DynamicItem> query = new BmobQuery<DynamicItem>();
+        query.include("Writer");
         query.order("-createdAt");
         query.findObjects(new FindListener<DynamicItem>() {
             @Override

@@ -10,7 +10,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="10dp"
         android:scrollbars="none">
 
@@ -68,13 +68,17 @@
                 android:text="详细内容加载中。。。"
                 android:textSize="16sp" />
 
+
             <!--点赞加评论-->
             <LinearLayout
+                android:id="@+id/rl_enroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@color/white">
+
                 <!--点赞-->
                 <LinearLayout
                     android:layout_width="0dp"
@@ -84,8 +88,8 @@
                     <!--点赞按钮-->
                     <com.sackcentury.shinebuttonlib.ShineButton
                         android:id="@+id/shineButton"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_centerInParent="true"
                         android:src="@android:color/darker_gray"
                         app:btn_color="@android:color/darker_gray"
@@ -111,20 +115,85 @@
                         android:textColor="@color/colorGrayText" />
                 </LinearLayout>
 
-
                 <!--评论-->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center">
-                    <!--<TextView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="5"/>-->
+                    android:layout_height="100dp"
+                    android:gravity="center"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/comment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_write"
+                        android:layout_gravity="center" />
                 </LinearLayout>
+
             </LinearLayout>
 
+            <!--评论输入框-->
+            <RelativeLayout
+                android:id="@+id/rl_comment"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/white"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true">
+
+                <TextView
+                    android:id="@+id/hide_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="隐藏"
+                    android:textSize="13sp"
+                    android:textColor="@color/colorGrayText"
+                    android:drawableBottom="@color/colorGrayText"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"/>
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorGrayText"
+                    android:layout_toRightOf="@id/hide_down"
+                    android:layout_marginLeft="10dp"/>
+                <EditText
+                    android:id="@+id/comment_content"
+                    android:hint="输入评论内容"
+                    android:textSize="15sp"
+                    android:singleLine="true"
+                    android:layout_width="240dp"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/hide_down"
+                    android:layout_marginLeft="20dp"/>
+
+                <Button
+                    android:id="@+id/comment_send"
+                    android:layout_width="50dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="5dp"
+                    android:text="发送"
+                    android:textSize="13sp"
+                    android:textColor="@color/white"
+                    android:background="@color/colorAccent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="15dp"/>
+            </RelativeLayout>
+
+
+            <!--评论列表-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.ht.communi.customView.MyXListView
+                    android:id="@+id/xListView_comm_reply"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"/>
+            </RelativeLayout>
 
         </LinearLayout>
     </ScrollView>

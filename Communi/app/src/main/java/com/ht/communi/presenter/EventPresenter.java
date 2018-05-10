@@ -8,6 +8,8 @@ import com.ht.communi.view.IEvent;
 import java.util.List;
 
 /**
+ *
+ * 加载社团活动数据
  * Created by Administrator on 2018/5/7.
  */
 

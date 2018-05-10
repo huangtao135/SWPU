@@ -8,6 +8,7 @@ import com.ht.communi.view.ICommunity;
 import java.util.List;
 
 /**
+ * 加载我加入的社团   的数据
  * Created by Administrator on 2018/5/9.
  */
 

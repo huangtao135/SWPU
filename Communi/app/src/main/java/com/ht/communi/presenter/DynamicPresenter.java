@@ -9,7 +9,8 @@ import com.ht.communi.view.IDynamic;
 import java.util.List;
 
 /**
- * 作用：朋友圈的Presenter
+ * 加载朋友圈的数据
+ * 朋友圈的Presenter
  */
 public class DynamicPresenter {
     private DynamicModel mDynamicModel = new DynamicModel();
@@ -20,18 +21,6 @@ public class DynamicPresenter {
     }
 
     public void onRefresh(){
-//        mDynamicModel.getDynamicItem(new DynamicModelImpl.BaseListener() {
-//            @Override
-//            public void getSuccess(Object o) {
-//                List<DynamicItem> list= (List<DynamicItem>) o;
-//                mView.onRefresh(list);
-//            }
-//
-//            @Override
-//            public void getFailure() {
-//            }
-//        });
-
         mDynamicModel.getDynamicItem(0, DynamicModel.STATE_REFRESH, new DynamicModelImpl.BaseListener() {
             @Override
             public void getSuccess(Object o) {
