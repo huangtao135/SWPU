@@ -9,6 +9,7 @@ import com.ht.communi.model.impl.CommModelImpl;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
@@ -122,7 +123,7 @@ public class CommModel implements CommModelImpl {
      * @param item
      * @param listener
      */
-    public void getMyCommItem(CommunityItem item, final BaseListener listener) {
+    public void getMyStudentItem(CommunityItem item, final BaseListener listener) {
         BmobQuery<Student> query = new BmobQuery<>();
         query.addWhereRelatedTo("commMembers", new BmobPointer(item));
         query.findObjects(new FindListener<Student>() {
@@ -139,4 +140,29 @@ public class CommModel implements CommModelImpl {
         });
 
     }
+
+    /**
+     * 查询加入某个用户加入的所有社团
+     *
+     * @param listener
+     */
+    public void getMyCommItem( final BaseListener listener) {
+        BmobQuery<CommunityItem> query = new BmobQuery<>();
+        Student student =  BmobUser.getCurrentUser(Student.class);
+        query.addWhereRelatedTo("communities",new BmobPointer(student));
+        query.findObjects(new FindListener<CommunityItem>() {
+            @Override
+            public void done(List<CommunityItem> list, BmobException e) {
+                if (e == null) {
+                    Log.i("htht", "done: 查询我的社团成功：共   " + list.size() + "  条数据。");
+                    listener.getSuccess(list);
+                } else {
+                    listener.getFailure();
+                    Log.i("htht", "查询我的社团失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
+    }
+
+
 }

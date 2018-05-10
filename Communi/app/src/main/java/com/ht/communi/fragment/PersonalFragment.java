@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -227,9 +229,18 @@ public class PersonalFragment extends Fragment {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         // 判断存储卡是否可以用，可用进行存储
         if (hasSdcard()) {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                    Uri.fromFile(new File(Environment
-                            .getExternalStorageDirectory(), IMAGE_FILE_NAME)));
+            if (Build.VERSION.SDK_INT >= 24) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        FileProvider.getUriForFile(context, "com.ht.communi.fileprovider", new File(Environment
+                                .getExternalStorageDirectory(), IMAGE_FILE_NAME)) );
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            }else {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(new File(Environment
+                                .getExternalStorageDirectory(), IMAGE_FILE_NAME)));
+            }
         }
         startActivityForResult(intent, PHOTO_REQUEST_CAMERA);
     }
@@ -254,7 +265,13 @@ public class PersonalFragment extends Fragment {
             if (hasSdcard()) {
                 tempFile = new File(Environment.getExternalStorageDirectory(),
                         IMAGE_FILE_NAME);
-                crop(Uri.fromFile(tempFile));
+
+                if (Build.VERSION.SDK_INT >= 24) {
+                    crop(FileProvider.getUriForFile(context, "com.ht.communi.fileprovider", tempFile));
+                }else {
+                    crop(Uri.fromFile(tempFile));
+                }
+
             } else {
                 Toast.makeText(context, "未找到存储卡，无法存储照片！",
                         Toast.LENGTH_SHORT).show();
@@ -368,6 +385,9 @@ public class PersonalFragment extends Fragment {
         intent.putExtra("outputFormat", "JPEG");
         intent.putExtra("noFaceDetection", true);// 取消人脸识别
         intent.putExtra("return-data", true);
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         startActivityForResult(intent, PHOTO_REQUEST_CUT);
     }

@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.ht.communi.activity.CreateCommunityActivity;
-import com.ht.communi.activity.CreateEventActivity;
+import com.ht.communi.activity.MyCommunityActivity;
 import com.ht.communi.activity.R;
 import com.ht.communi.adapter.CommunityAdapter;
 import com.ht.communi.javabean.CommunityItem;
@@ -74,7 +74,8 @@ public class CommunityFragment extends Fragment implements ICommunity {
         menu_my_comm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), CreateEventActivity.class);
+//                Intent intent = new Intent(getContext(), CreateEventActivity.class);
+                Intent intent = new Intent(getContext(), MyCommunityActivity.class);
                 startActivity(intent);
             }
         });

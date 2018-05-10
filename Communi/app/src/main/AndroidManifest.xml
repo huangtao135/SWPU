@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.ht.communi.activity">
 
     <!-- 允许联网 -->
@@ -15,6 +16,7 @@
     <!-- 允许读取手机状态 用于创建BmobInstallation -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+
     <application
         android:name="com.ht.communi.application.BaseApplication"
         android:allowBackup="true"
@@ -23,6 +25,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar">
+
+        <provider
+            android:name="com.ht.communi.customView.MyFileProvider"
+            android:authorities="com.ht.communi.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/my_file_paths" />
+        </provider>
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +57,8 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".CreateCommunityActivity" />
         <activity android:name=".CreateEventActivity" />
-        <activity android:name=".CommDetailActivity"></activity>
+        <activity android:name=".CommDetailActivity" />
+        <activity android:name=".MyCommunityActivity"></activity>
     </application>
 
 </manifest>
