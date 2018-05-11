@@ -51,10 +51,6 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
-//            View view = View.inflate(mContext,R.layout.community_cardview_item, null);
-//            RecyclerView.ViewHolder holder = new NormalItemHolder(view);
-//            view.setOnClickListener(this);
-//            return holder;
             return new NormalItemHolder(mLayoutInflater.inflate(R.layout.community_cardview_item, parent, false));
         }
         return null;
@@ -136,15 +132,11 @@ public class CommunityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     void showCommDetail(View v,CommunityItem item) {
-//        NewsListEntity entity = mDataList.get(pos);
-//        NewsDetailActivity.actionStart(mContext, entity.getNewsID(), entity.getRecommendAmount(), entity.getCommentAmount());
-
         Intent intent = new Intent(v.getContext(), CommDetailActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("COMM", item);
         intent.putExtras(bundle);
         v.getContext().startActivity(intent);
-
         Log.i("htht", "onItemClick: 点中了 ==  "+item.getCommName());
     }
 

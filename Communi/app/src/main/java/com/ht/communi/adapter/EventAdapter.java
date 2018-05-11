@@ -54,8 +54,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
             return new NormalItemHolder(mLayoutInflater.inflate(R.layout.event_cardview_item, parent, false));
-        }
-        else{
+        } else {
             return new GroupItemHolder(mLayoutInflater.inflate(R.layout.event_cardview_title_item, parent, false));
         }
     }
@@ -73,7 +72,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (null == entity)
             return;
 
-        if(viewHolder instanceof GroupItemHolder){
+        if (viewHolder instanceof GroupItemHolder) {
             GroupItemHolder holder = (GroupItemHolder) viewHolder;
             holder.eventTitle.setText(entity.getEventName());
             holder.eventDescription.setText(entity.getEventContent());
@@ -81,14 +80,20 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             holder.eventStart.setText(entity.getEventStart().getDate().toString());
             holder.eventEnd.setText(entity.getEventEnd().getDate().toString());
             holder.eventTime.setText(FriendlyDate(entity.getEventStart().getDate()));
+            if (entity.getCommunity() != null) {
+                holder.eventComm.setText(entity.getCommunity().getCommName());
+            }
 
-        }else if (viewHolder instanceof NormalItemHolder) {
+        } else if (viewHolder instanceof NormalItemHolder) {
             NormalItemHolder holder = (NormalItemHolder) viewHolder;
             holder.eventTitle.setText(entity.getEventName());
             holder.eventDescription.setText(entity.getEventContent());
             holder.eventPlace.setText(entity.getEventPlace());
             holder.eventStart.setText(entity.getEventStart().getDate().toString());
             holder.eventEnd.setText(entity.getEventEnd().getDate().toString());
+            if (entity.getCommunity() != null) {
+                holder.eventComm.setText(entity.getCommunity().getCommName());
+            }
         }
     }
 
@@ -111,10 +116,10 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return GROUP_ITEM;
 
         String currentDate = mDataList.get(position).getEventStart().getDate();
-        Log.i("htht", "currentDate: "+currentDate+"          position:"+ position);
-        Log.i("htht", "currentDate: "+currentDate+"          position:"+ position);
+        Log.i("htht", "currentDate: " + currentDate + "          position:" + position);
+        Log.i("htht", "currentDate: " + currentDate + "          position:" + position);
         int prevIndex = position - 1;
-        int isDifferent = daysOfTwo(strToDate(mDataList.get(prevIndex).getEventStart().getDate()),strToDate(currentDate)) ;
+        int isDifferent = daysOfTwo(strToDate(mDataList.get(prevIndex).getEventStart().getDate()), strToDate(currentDate));
 //        boolean isDifferent = !mDataList.get(prevIndex).getEventStart().getDate().equals(currentDate);
         return isDifferent != 0 ? GROUP_ITEM : NORMAL_ITEM;
     }
@@ -134,6 +139,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         TextView eventPlace;
         TextView eventStart;
         TextView eventEnd;
+        TextView eventComm;
 
 
         public NormalItemHolder(View itemView) {
@@ -144,6 +150,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             eventPlace = itemView.findViewById(R.id.event_item_place);
             eventStart = itemView.findViewById(R.id.event_item_start_time);
             eventEnd = itemView.findViewById(R.id.event_item_end_time);
+            eventComm = itemView.findViewById(R.id.event_item_comm);
         }
     }
 
@@ -183,17 +190,17 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Date nowDate = new Date();
         Date date = strToDate(strDate);
         int dayDiff = daysOfTwo(nowDate, date);
-        if(dayDiff == 0){
+        if (dayDiff == 0) {
             return "今日";
-        }else if(dayDiff < 0){
-            return Math.abs(dayDiff)+"天后";
-        }else{
-            return Math.abs(dayDiff)+"天前";
+        } else if (dayDiff < 0) {
+            return Math.abs(dayDiff) + "天后";
+        } else {
+            return Math.abs(dayDiff) + "天前";
         }
     }
 
     //将字符串转换为Date
-    public static Date strToDate(String strDate){
+    public static Date strToDate(String strDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//小写的mm表示的是分钟
         Date date = new Date();
         try {

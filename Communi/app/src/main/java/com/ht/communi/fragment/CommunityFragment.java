@@ -28,12 +28,12 @@ import java.util.List;
 public class CommunityFragment extends Fragment implements ICommunity {
 
     private SwipeRefreshLayout swipeRefreshLayout;  //刷新控件
-    private FloatingActionButton menu_add_comm;
     private RecyclerView rv_community_list;
     private CommunityAdapter communityAdapter;
     private CommunityPresenter mPresenter;
     private List<CommunityItem> mList = new ArrayList<>();  //临时容器
     private List<CommunityItem> mCommunityList;     //真正的社团数据
+    private FloatingActionButton menu_add_comm;
     private FloatingActionButton menu_my_comm;
 
     @Override

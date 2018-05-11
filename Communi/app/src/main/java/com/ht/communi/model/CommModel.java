@@ -81,6 +81,7 @@ public class CommModel implements CommModelImpl {
     public void getCommItem(final BaseListener listener) {
         BmobQuery<CommunityItem> query = new BmobQuery<>();
         query.order("-createdAt");
+        query.include("commLeader");
         query.findObjects(new FindListener<CommunityItem>() {
             @Override
             public void done(List<CommunityItem> list, BmobException e) {
@@ -149,6 +150,7 @@ public class CommModel implements CommModelImpl {
     public void getMyCommItem( final BaseListener listener) {
         BmobQuery<CommunityItem> query = new BmobQuery<>();
         Student student =  BmobUser.getCurrentUser(Student.class);
+        query.include("commLeader");
         query.addWhereRelatedTo("communities",new BmobPointer(student));
         query.findObjects(new FindListener<CommunityItem>() {
             @Override

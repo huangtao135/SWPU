@@ -2,6 +2,7 @@ package com.ht.communi.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,10 +13,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.clans.fab.FloatingActionButton;
 import com.ht.communi.adapter.CommunityReplyAdapter;
 import com.ht.communi.customView.MyXListView;
 import com.ht.communi.customView.ResizableImageView;
@@ -40,6 +43,13 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 import me.maxwin.view.XListView;
 
+
+/**
+ * 有两种情况会进入次Activity
+ * 1.浏览社团的时候。。。floadButtom是点击申请加入社团
+ * 2.点击我的社团的时候，如果是管理员，则点击查看申请列表，如果是普通成员，则没有此按钮
+ *
+ */
 public class CommDetailActivity extends AppCompatActivity implements XListView.IXListViewListener, ICommunityReply {
     private TextView tv_comm_detail_title;
     private TextView tv_comm_detail_school;
@@ -55,23 +65,44 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
     private Button comment_send;
     private LinearLayout rl_enroll;
     private RelativeLayout rl_comment;
+    private ScrollView scrollView;
+
 
     private MyXListView xListView;
-
     private CommunityReplyPresenter mPresenter;
     private CommunityItem communityItem;
     private CommunityReplyAdapter mAdapter;
     private List<CommunityReplyItem> mList = new ArrayList<>();     //临时数据
     private List<CommunityReplyItem> mDynamicList;              //真正的数据
 
+    private FloatingActionButton menu_want_be_member;
+    private FloatingActionButton menu_this_comm_event;
+    private FloatingActionButton menu_apply_be_member;
+    private FloatingActionButton menu_edit_comm;
+    private boolean isLeader;           //true表示是这个部门的leader
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comm_detail);
         initView();
+        communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM");
+        //根据当前用户身份，判断显示FloatingActionButton显示哪些
+        isLeader = communityItem.getCommLeader().getObjectId().equals(BmobUser.getCurrentUser(Student.class).getObjectId());
+        Log.i("htht", "是不是队长哦: "+isLeader);
+        if(isLeader){
+            menu_apply_be_member.setVisibility(View.VISIBLE);
+            menu_edit_comm.setVisibility(View.VISIBLE);
+
+            menu_want_be_member.setVisibility(View.GONE);
+        }else {
+            menu_apply_be_member.setVisibility(View.GONE);
+            menu_edit_comm.setVisibility(View.GONE);
+
+            menu_want_be_member.setVisibility(View.VISIBLE);
+        }
 
         //社团信息+点赞
-        communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM");
         if (shineButton != null) {
             shineButton.init(CommDetailActivity.this);
             shineButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
@@ -109,7 +140,6 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
                     tv_likes.setInteger(0, likes);
                     tv_likes.start();
                 }
-
             }
 
             @Override
@@ -117,13 +147,11 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
 
             }
         });
-
         if (communityItem.getCommIcon() != null) {
             Glide.with(CommDetailActivity.this)
                     .load(communityItem.getCommIcon().getFileUrl())
                     .into(iv_comm_icon);
         }
-
 
         //评论的xListView
         xListView.setPullRefreshEnable(true);
@@ -157,7 +185,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         tv_comm_detail_content = findViewById(R.id.tv_comm_detail_content);
         shineButton = findViewById(R.id.shineButton);
         tv_likes = findViewById(R.id.tv_likes);
-
+        scrollView = (ScrollView) findViewById(R.id.base_scrollView);
 
         //评论功能
         rl_enroll = (LinearLayout) findViewById(R.id.rl_enroll);
@@ -179,6 +207,8 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
                 // 隐藏评论框
                 rl_enroll.setVisibility(View.VISIBLE);
                 rl_comment.setVisibility(View.GONE);
+                //移动到最顶端
+                scrollView.smoothScrollTo(0, 0);
                 // 隐藏输入法，然后暂存当前输入框的内容，方便下次使用
                 InputMethodManager im = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 im.hideSoftInputFromWindow(comment_content.getWindowToken(), 0);
@@ -192,8 +222,51 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
                 sendComment();
             }
         });
-
         xListView = findViewById(R.id.xListView_comm_reply);
+
+        //申请成为社团成员
+        menu_want_be_member = findViewById(R.id.menu_want_be_member);
+        menu_want_be_member.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CommDetailActivity.this, CreateCommunityActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //查看本社团活动
+        menu_this_comm_event = findViewById(R.id.menu_this_comm_event);
+        menu_this_comm_event.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CommDetailActivity.this, CommEventActivity.class);
+                Bundle bundle = new Bundle();
+                if (communityItem != null) {
+                    bundle.putSerializable("COMM_EVENT", communityItem);
+                }
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+
+        //查看盛情加入社团列表
+        menu_apply_be_member = findViewById(R.id.menu_apply_be_member);
+        menu_apply_be_member.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        //编辑社团信息
+        menu_edit_comm = findViewById(R.id.menu_edit_comm);
+        menu_edit_comm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
 
     /**
@@ -231,7 +304,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
      */
     @Override
     public void onRefresh() {
-        if(communityItem != null) {
+        if (communityItem != null) {
             mPresenter.onRefresh(communityItem);
         }
     }
@@ -243,6 +316,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
     public void onLoadMore() {
         mPresenter.onLoadMore();
     }
+
 
     /**
      * view 回调
@@ -268,11 +342,18 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         onLoad();
     }
 
+    /**
+     * view 发送完数据的回调
+     */
     @Override
     public void onSendFinish() {
         // 发送完，清空输入框
         comment_content.setText("");
         Toast.makeText(getApplicationContext(), "评论成功！", Toast.LENGTH_SHORT).show();
+        Log.i("htht", "onSendFinish:刷新了！！！ ");
+        if (communityItem != null) {
+            mPresenter.onRefresh(communityItem);
+        }
     }
 
     private void onLoad() {

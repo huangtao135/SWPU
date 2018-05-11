@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ht.communi.javabean.CommunityItem;
 import com.ht.communi.javabean.EventItem;
 import com.ht.communi.model.EventModel;
 import com.ht.communi.model.impl.EventModelImpl;
@@ -25,7 +26,7 @@ import java.util.Date;
 
 import cn.bmob.v3.datatype.BmobDate;
 
-public class CreateEventActivity extends AppCompatActivity implements OnDateSetListener{
+public class CreateEventActivity extends AppCompatActivity implements OnDateSetListener {
 
     private EditText ed_event_name;
     private EditText ed_event_description;
@@ -43,6 +44,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
     private Date end_date;
     private TextInputLayout til_event_star_time;
     private TextInputLayout til_event_end_time;
+    private CommunityItem communityItem;
 
 
     @Override
@@ -51,6 +53,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
         setContentView(R.layout.activity_creat_event);
         context = this;
         initView();
+
+        //获得当前社团
+        communityItem = (CommunityItem) getIntent().getSerializableExtra("CREATE_COMM_EVENT");
 
         long tenYears = 10L * 365 * 1000 * 60 * 60 * 24L;
         mDialogAll = new TimePickerDialog.Builder()
@@ -109,8 +114,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
         ed_event_star_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("htht", "mDialogAll.isResumed(): "+mDialogAll.isResumed());
-                if( !mDialogAll.isResumed() ) {
+                Log.i("htht", "mDialogAll.isResumed(): " + mDialogAll.isResumed());
+                if (!mDialogAll.isResumed()) {
                     mDialogAll.show(getSupportFragmentManager(), "start");
                 }
             }
@@ -119,7 +124,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
         ed_event_end_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!mDialogAll.isResumed()) {
+                if (!mDialogAll.isResumed()) {
                     mDialogAll.show(getSupportFragmentManager(), "end");
                 }
             }
@@ -147,14 +152,17 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
         String description = ed_event_description.getText().toString();
 
         EventItem eventItem = new EventItem();
-        eventItem.setCommunity(null);
+
+        if (communityItem != null) {
+            eventItem.setCommunity(communityItem);
+        }
         eventItem.setEventContent(description);
         eventItem.setEventName(name);
         eventItem.setEventPlace(place);
-        if(start_date != null) {
+        if (start_date != null) {
             eventItem.setEventStart(new BmobDate(start_date));
         }
-        if(end_date != null) {
+        if (end_date != null) {
             eventItem.setEventEnd(new BmobDate(end_date));
         }
 
@@ -214,7 +222,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
             til_event_end_time.setError(null);
         }
 
-        if( !start_time.isEmpty() && !end_time.isEmpty() && start_time.compareTo(end_time) > 0.){
+        if (!start_time.isEmpty() && !end_time.isEmpty() && start_time.compareTo(end_time) > 0.) {
             til_event_star_time.setError("起止时间颠倒");
             til_event_end_time.setError("起止时间颠倒");
             valid = false;
@@ -236,10 +244,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnDateSetL
     public void onDateSet(TimePickerDialog timePickerDialog, long millseconds) {
         String text = getDateToString(millseconds);
         String tag = timePickerDialog.getTag();
-        if(tag.equals("start")){
+        if (tag.equals("start")) {
             start_date = new Date(millseconds);
             ed_event_star_time.setText(text);
-        }else{
+        } else {
             end_date = new Date(millseconds);
             ed_event_end_time.setText(text);
         }

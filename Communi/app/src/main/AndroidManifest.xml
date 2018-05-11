@@ -16,7 +16,6 @@
     <!-- 允许读取手机状态 用于创建BmobInstallation -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-
     <application
         android:name="com.ht.communi.application.BaseApplication"
         android:allowBackup="true"
@@ -25,7 +24,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar">
-
         <provider
             android:name="com.ht.communi.customView.MyFileProvider"
             android:authorities="com.ht.communi.fileprovider"
@@ -58,7 +56,8 @@
         <activity android:name=".CreateCommunityActivity" />
         <activity android:name=".CreateEventActivity" />
         <activity android:name=".CommDetailActivity" />
-        <activity android:name=".MyCommunityActivity"></activity>
+        <activity android:name=".MyCommunityActivity" />
+        <activity android:name=".CommEventActivity"></activity>
     </application>
 
 </manifest>
