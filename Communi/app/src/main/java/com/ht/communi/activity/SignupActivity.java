@@ -68,7 +68,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //请求短信
-                BmobSMS.requestSMSCode(ed_mobile.getText().toString(), "我的模板", new QueryListener<Integer>() {
+                BmobSMS.requestSMSCode(ed_mobile.getText().toString(), "PK的模板", new QueryListener<Integer>() {
                     @Override
                     public void done(Integer integer, BmobException e) {
                         if(e==null){//验证码发送成功

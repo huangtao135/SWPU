@@ -72,7 +72,6 @@ public class CommModel implements CommModelImpl {
 
     }
 
-
     /**
      * 获取所有的社团消息
      *
@@ -143,7 +142,7 @@ public class CommModel implements CommModelImpl {
     }
 
     /**
-     * 查询加入某个用户加入的所有社团
+     * 查询某个用户加入的所有社团
      *
      * @param listener
      */

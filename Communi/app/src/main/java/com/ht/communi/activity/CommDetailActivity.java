@@ -38,8 +38,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobPointer;
+import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.maxwin.view.XListView;
 
@@ -48,7 +52,6 @@ import me.maxwin.view.XListView;
  * 有两种情况会进入次Activity
  * 1.浏览社团的时候。。。floadButtom是点击申请加入社团
  * 2.点击我的社团的时候，如果是管理员，则点击查看申请列表，如果是普通成员，则没有此按钮
- *
  */
 public class CommDetailActivity extends AppCompatActivity implements XListView.IXListViewListener, ICommunityReply {
     private TextView tv_comm_detail_title;
@@ -89,13 +92,13 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM");
         //根据当前用户身份，判断显示FloatingActionButton显示哪些
         isLeader = communityItem.getCommLeader().getObjectId().equals(BmobUser.getCurrentUser(Student.class).getObjectId());
-        Log.i("htht", "是不是队长哦: "+isLeader);
-        if(isLeader){
+        Log.i("htht", "是不是队长哦: " + isLeader);
+        if (isLeader) {
             menu_apply_be_member.setVisibility(View.VISIBLE);
             menu_edit_comm.setVisibility(View.VISIBLE);
 
-            menu_want_be_member.setVisibility(View.GONE);
-        }else {
+            menu_want_be_member.setVisibility(View.VISIBLE);
+        } else {
             menu_apply_be_member.setVisibility(View.GONE);
             menu_edit_comm.setVisibility(View.GONE);
 
@@ -229,8 +232,19 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         menu_want_be_member.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CommDetailActivity.this, CreateCommunityActivity.class);
-                startActivity(intent);
+                BmobRelation relation = new BmobRelation();
+                relation.add(BmobUser.getCurrentUser(Student.class));
+                communityItem.setCommApplies(relation);
+                communityItem.update(new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        if (e == null) {
+                            Log.i("htht", "申请加入本社图成功");
+                        } else {
+                            Log.i("htht", "申请加入本社图成功：" + e.getMessage());
+                        }
+                    }
+                });
             }
         });
 
@@ -249,12 +263,23 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
             }
         });
 
-        //查看盛情加入社团列表
+        //查看申请加入社团列表
         menu_apply_be_member = findViewById(R.id.menu_apply_be_member);
         menu_apply_be_member.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                BmobQuery<Student> query = new BmobQuery<>();
+                query.addWhereRelatedTo("commApplies", new BmobPointer(communityItem));
+                query.findObjects(new FindListener<Student>() {
+                    @Override
+                    public void done(List<Student> list, BmobException e) {
+                        if(e==null){
+                            Log.i("htht","查询个数："+list.size());
+                        }else{
+                            Log.i("htht","失败："+e.getMessage());
+                        }
+                    }
+                });
             }
         });
 
@@ -263,7 +288,8 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         menu_edit_comm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (communityItem != null) {
+                }
             }
         });
 

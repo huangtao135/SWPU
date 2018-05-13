@@ -47,10 +47,7 @@
                 app:trimLength="30"
                 app:trimMode="trimModeLength"
                 app:showTrimExpandedText="true"
-                android:text="大学生心理协会，是西南石油大学比较牛逼的协会111
-                大学生心理协会，是西南石油大学比较牛逼的协会222
-                大学生心理协会，是西南石油大学比较牛逼的协会333
-                大学生心理协会，是西南石油大学比较牛逼的协会444"
+                android:text="大学生心理协会"
                 android:textSize="16sp"/>
         </LinearLayout>
 
@@ -71,7 +68,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="博学楼B103"
+                android:text="西苑六栋524"
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:textSize="16sp"/>
@@ -95,7 +92,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="西柚社"
+                android:text="动漫社"
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:textSize="16sp"/>
