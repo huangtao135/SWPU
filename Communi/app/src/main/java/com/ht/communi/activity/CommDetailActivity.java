@@ -38,12 +38,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 import me.maxwin.view.XListView;
 
@@ -263,23 +260,18 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
             }
         });
 
-        //查看申请加入社团列表
+        //查看申请加入这个社团的社团列表
         menu_apply_be_member = findViewById(R.id.menu_apply_be_member);
         menu_apply_be_member.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BmobQuery<Student> query = new BmobQuery<>();
-                query.addWhereRelatedTo("commApplies", new BmobPointer(communityItem));
-                query.findObjects(new FindListener<Student>() {
-                    @Override
-                    public void done(List<Student> list, BmobException e) {
-                        if(e==null){
-                            Log.i("htht","查询个数："+list.size());
-                        }else{
-                            Log.i("htht","失败："+e.getMessage());
-                        }
-                    }
-                });
+                Intent intent = new Intent(CommDetailActivity.this,applyBeMemberActivity.class);
+                Bundle bundle = new Bundle();
+                if (communityItem != null) {
+                    bundle.putSerializable("COMM_APPLY", communityItem);
+                }
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
 

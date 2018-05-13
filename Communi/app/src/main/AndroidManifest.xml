@@ -57,7 +57,8 @@
         <activity android:name=".CreateEventActivity" />
         <activity android:name=".CommDetailActivity" />
         <activity android:name=".MyCommunityActivity" />
-        <activity android:name=".CommEventActivity"></activity>
+        <activity android:name=".CommEventActivity" />
+        <activity android:name=".applyBeMemberActivity"></activity>
     </application>
 
 </manifest>

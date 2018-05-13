@@ -257,7 +257,6 @@ public class PersonalFragment extends Fragment {
                 try {
                     crop(uri);
                 } catch (Exception e) {
-                    // TODO: handle exception
                 }
             }
 

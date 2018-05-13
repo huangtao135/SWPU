@@ -72,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-                // TODO: Implement successful signup logic here
                 String mobile = data.getStringExtra("mobile");
                 Log.i("htht", "onActivityResult: " + mobile);
                 if(mobile != null){
@@ -97,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("登陆中...");
         progressDialog.show();
 
-        // TODO: Implement your own authentication logic here.
         String mobile = ed_account.getText().toString();
         String password = ed_password.getText().toString();
 

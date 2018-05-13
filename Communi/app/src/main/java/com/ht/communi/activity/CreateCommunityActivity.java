@@ -136,7 +136,7 @@ public class CreateCommunityActivity extends AppCompatActivity {
                 try {
                     crop(uri);
                 } catch (Exception e) {
-                    // TODO: handle exception
+
                 }
             }
 

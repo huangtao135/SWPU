@@ -115,7 +115,6 @@ public class ActionSheetDialog {
 
 		int size = sheetItemList.size();
 
-		// TODO 高度控制，非最佳解决办法
 		// 添加条目过多的时候控制高度
 		if (size >= 7) {
 			LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) sLayout_content

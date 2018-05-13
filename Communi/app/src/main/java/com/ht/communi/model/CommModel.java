@@ -69,7 +69,24 @@ public class CommModel implements CommModelImpl {
                 }
             });
         }
+    }
+    //查询当前社团的申请列表
+    public void getCommAppliers(CommunityItem communityItem,final BaseListener listener){
 
+        BmobQuery<Student> query = new BmobQuery<>();
+        query.addWhereRelatedTo("commApplies", new BmobPointer(communityItem));
+        query.findObjects(new FindListener<Student>() {
+            @Override
+            public void done(List<Student> list, BmobException e) {
+                if(e==null){
+                    listener.getSuccess(list);
+                    Log.i("htht","查询个数："+list.size());
+                }else{
+                    listener.getFailure();
+                    Log.i("htht","失败："+e.getMessage());
+                }
+            }
+        });
     }
 
     /**
