@@ -98,12 +98,14 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
                         0xCE)));
                 // set item width
                 openItem.setWidth(dip2px(90));
-                // set item title
-                openItem.setTitle("Open");
-                // set item title fontsize
-                openItem.setTitleSize(18);
-                // set item title font color
-                openItem.setTitleColor(Color.WHITE);
+                // set a icon
+                openItem.setIcon(R.drawable.ic_agree);
+//                // set item title
+//                openItem.setTitle("Agree");
+//                // set item title fontsize
+//                openItem.setTitleSize(18);
+//                // set item title font color
+//                openItem.setTitleColor(Color.WHITE);
                 // add to menu
                 menu.addMenuItem(openItem);
 
@@ -116,7 +118,7 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
                 // set item width
                 deleteItem.setWidth(dip2px(90));
                 // set a icon
-                deleteItem.setIcon(R.drawable.ic_time);
+                deleteItem.setIcon(R.drawable.ic_refuse);
                 // add to menu
                 menu.addMenuItem(deleteItem);
             }
