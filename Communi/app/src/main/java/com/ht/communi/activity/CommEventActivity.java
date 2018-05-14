@@ -32,6 +32,7 @@ public class CommEventActivity extends AppCompatActivity implements IEvent {
     private CommunityItem communityItem;
     private TextView tv_comm_event_title;
     private ImageView iv_comm_event_add;
+    private boolean isLeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,14 @@ public class CommEventActivity extends AppCompatActivity implements IEvent {
         setContentView(R.layout.activity_comm_event);
         initView();
         initRefresh();
+
+        //获取是否为本社团管理员
+        isLeader = getIntent().getBooleanExtra("IS_LEADER",false);
+        if(isLeader){
+            iv_comm_event_add.setVisibility(View.VISIBLE);
+        }else{
+            iv_comm_event_add.setVisibility(View.GONE);
+        }
 
         //获得当前社团
         communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM_EVENT");

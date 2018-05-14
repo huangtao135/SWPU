@@ -55,6 +55,15 @@ public class CommunityFragment extends Fragment implements ICommunity {
         rv_community_list.setAdapter(communityAdapter);
         rv_community_list.setLayoutManager(new LinearLayoutManager(getContext()));
 
+//        if (NetUtil.checkNet(getActivity())) {
+//            mPresenter.onRefresh();
+//        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
         if (NetUtil.checkNet(getActivity())) {
             mPresenter.onRefresh();
         }

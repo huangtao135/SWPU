@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ht.communi.javabean.Student;
+import com.ht.communi.javabean.StudentCommunity;
 
 import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.exception.BmobException;
@@ -173,6 +174,20 @@ public class SignupActivity extends AppCompatActivity {
                         @Override
                         public void done(Student student, BmobException e) {
                             if(e == null){
+                                //注册成功，将新用户加入到StudentCommunity表中
+                                StudentCommunity studentCommunity = new StudentCommunity();
+                                studentCommunity.setStudent(student);
+                                studentCommunity.save(new SaveListener<String>() {
+                                    @Override
+                                    public void done(String s, BmobException e) {
+                                        if(e == null){
+                                            Log.i("htht", "新用户注册成功，并加入到studentCommunity表中: ");
+                                        }else{
+                                            Log.i("htht", "新用户注册成功，但加入到studentCommunity表中失败: "+e.getErrorCode());
+                                        }
+                                    }
+                                });
+
                                 onSignupSuccess();
                             }else{
                                 String errorMessage ;

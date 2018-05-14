@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.datatype.BmobRelation;
 
 /**
  * Created by Administrator on 2018/4/17.
@@ -16,16 +15,6 @@ public class Student extends BmobUser implements Serializable{
     private Boolean sex;
     private Integer age;
     private BmobFile userIcon;
-
-    private BmobRelation communities;       //加入的所有社团
-
-    public BmobRelation getCommunities() {
-        return communities;
-    }
-
-    public void setCommunities(BmobRelation communities) {
-        this.communities = communities;
-    }
 
     public String getSchool() {
         return school;

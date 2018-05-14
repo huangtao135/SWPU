@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.ht.communi.javabean.CommunityItem;
 import com.ht.communi.javabean.Student;
+import com.ht.communi.javabean.StudentCommunity;
 import com.ht.communi.model.impl.CommModelImpl;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
 /**
@@ -37,7 +39,6 @@ public class CommModel implements CommModelImpl {
                     if (e == null) {
                         //bmobFile.getFileUrl()--返回的上传文件的完整地址
                         Log.i("htht", "上传社团icon成功:");
-                        communityItem.setCommIcon(commIcon);
                         communityItem.save(new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
@@ -70,6 +71,54 @@ public class CommModel implements CommModelImpl {
             });
         }
     }
+
+    /**
+     * 修改社团信息
+     * @param communityItem
+     * @param listener
+     */
+    public void changeCommItem(final String oldCommItemId,final CommunityItem communityItem, final BaseListener listener){
+        final BmobFile commIcon = communityItem.getCommIcon();
+        if (commIcon != null) {
+            commIcon.uploadblock(new UploadFileListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null) {
+                        //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                        Log.i("htht", "上传修改后的社团icon成功:");
+                        communityItem.update(oldCommItemId, new UpdateListener() {
+                            @Override
+                            public void done(BmobException e) {
+                                if (e == null) {
+                                    Log.i("htht", "社团修改成功，等待验证！！！");
+                                    listener.getSuccess(null);
+                                } else {
+                                    Log.i("htht", "社团修改失败！！！");
+                                }
+                            }
+                        });
+                    } else {
+                        listener.getFailure();
+                    }
+
+                }
+            });
+        } else {
+            communityItem.update(oldCommItemId, new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null) {
+                        Log.i("htht", "社团修改成功，等待验证！！！");
+                        listener.getSuccess(null);
+                    } else {
+                        Log.i("htht", "社团修改失败！！！");
+                    }
+                }
+            });
+        }
+    }
+
+
     //查询当前社团的申请列表
     public void getCommAppliers(CommunityItem communityItem,final BaseListener listener){
 
@@ -164,22 +213,52 @@ public class CommModel implements CommModelImpl {
      * @param listener
      */
     public void getMyCommItem( final BaseListener listener) {
-        BmobQuery<CommunityItem> query = new BmobQuery<>();
+        BmobQuery<StudentCommunity> queryStu = new BmobQuery<>();
         Student student =  BmobUser.getCurrentUser(Student.class);
-        query.include("commLeader");
-        query.addWhereRelatedTo("communities",new BmobPointer(student));
-        query.findObjects(new FindListener<CommunityItem>() {
+        queryStu.addWhereEqualTo("student",new BmobPointer(student));
+        queryStu.findObjects(new FindListener<StudentCommunity>() {
             @Override
-            public void done(List<CommunityItem> list, BmobException e) {
+            public void done(List<StudentCommunity> list, BmobException e) {
                 if (e == null) {
-                    Log.i("htht", "done: 查询我的社团成功：共   " + list.size() + "  条数据。");
-                    listener.getSuccess(list);
+                    BmobQuery<CommunityItem> query = new BmobQuery<>();
+                    query.include("commLeader");
+                    query.addWhereRelatedTo("communities",new BmobPointer(list.get(0)));
+                    query.findObjects(new FindListener<CommunityItem>() {
+                        @Override
+                        public void done(List<CommunityItem> list, BmobException e) {
+                            if (e == null) {
+                                Log.i("htht", "done: 查询我的社团成功：共   " + list.size() + "  条数据。");
+                                listener.getSuccess(list);
+                            } else {
+                                listener.getFailure();
+                                Log.i("htht", "查询我的社团失败：" + e.getMessage() + "," + e.getErrorCode());
+                            }
+                        }
+                    });
+                    Log.i("htht", "done查到啦！！！ "+list.get(0).getObjectId());
                 } else {
-                    listener.getFailure();
-                    Log.i("htht", "查询我的社团失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Log.i("htht", "222 " + e.getMessage() + e.getErrorCode());
                 }
             }
         });
+
+
+//        BmobQuery<CommunityItem> query = new BmobQuery<>();
+//        Student student =  BmobUser.getCurrentUser(Student.class);
+//        query.include("commLeader");
+//        query.addWhereRelatedTo("communities",new BmobPointer(student));
+//        query.findObjects(new FindListener<CommunityItem>() {
+//            @Override
+//            public void done(List<CommunityItem> list, BmobException e) {
+//                if (e == null) {
+//                    Log.i("htht", "done: 查询我的社团成功：共   " + list.size() + "  条数据。");
+//                    listener.getSuccess(list);
+//                } else {
+//                    listener.getFailure();
+//                    Log.i("htht", "查询我的社团失败：" + e.getMessage() + "," + e.getErrorCode());
+//                }
+//            }
+//        });
     }
 
 

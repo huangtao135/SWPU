@@ -22,9 +22,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.ht.communi.alrtdialog.ActionSheetDialog;
 import com.ht.communi.javabean.CommunityItem;
 import com.ht.communi.javabean.Student;
+import com.ht.communi.javabean.StudentCommunity;
 import com.ht.communi.model.CommModel;
 import com.ht.communi.model.impl.CommModelImpl;
 
@@ -32,12 +34,18 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
+
+import static com.ht.communi.activity.CommDetailActivity.commDetailActivity;
 
 public class CreateCommunityActivity extends AppCompatActivity {
 
@@ -60,18 +68,25 @@ public class CreateCommunityActivity extends AppCompatActivity {
     private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
     private static final int PHOTO_REQUEST_CUT = 3;// 剪切照片结果
     private Bitmap bitmap;
+    private CommunityItem communityItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creat_community);
         context = this;
+        communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM_CHANGE");
         initView();
     }
 
     private void initView(){
         ed_comm_name = findViewById(R.id.ed_comm_name);
         ed_comm_description = findViewById(R.id.ed_comm_description);
+        ed_comm_school = findViewById(R.id.ed_comm_school);
+        tv_font_count = findViewById(R.id.tv_font_count);
+        iv_comm = findViewById(R.id.iv_create_comm);
+        btn_create_comm = findViewById(R.id.btn_create_comm);
+
         ed_comm_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -86,16 +101,36 @@ public class CreateCommunityActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-        ed_comm_school = findViewById(R.id.ed_comm_school);
-        tv_font_count = findViewById(R.id.tv_font_count);
-        btn_create_comm = findViewById(R.id.btn_create_comm);
-        btn_create_comm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createComm();
+
+
+        //判断是创建社团还是修改社团
+        if(communityItem == null) {
+            btn_create_comm.setText("创建社团");
+            btn_create_comm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    createComm();
+                }
+            });
+        }else{
+            if(communityItem.getCommIcon() != null) {
+                Log.i("htht", "student.getUserIcon().getFileUrl(): "+ communityItem.getCommIcon().getFileUrl());
+                Glide.with(context)
+                        .load(communityItem.getCommIcon().getFileUrl())
+                        .error(R.mipmap.ic_launcher)
+                        .into(iv_comm);
             }
-        });
-        iv_comm = findViewById(R.id.iv_comm);
+            ed_comm_name.setText(communityItem.getCommName());
+            ed_comm_school.setText(communityItem.getCommSchool());
+            ed_comm_description.setText(communityItem.getCommDescription());
+            btn_create_comm.setText("修改社团");
+            btn_create_comm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    changeComm();
+                }
+            });
+        }
         iv_comm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,7 +309,7 @@ public class CreateCommunityActivity extends AppCompatActivity {
         final ProgressDialog progressDialog = new ProgressDialog(context,
                 R.style.Theme_AppCompat_DayNight_Dialog);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("创建账号中...");
+        progressDialog.setMessage("创建社团中...");
         progressDialog.show();
 
         String name = ed_comm_name.getText().toString();
@@ -283,7 +318,7 @@ public class CreateCommunityActivity extends AppCompatActivity {
 
         //将图片设置完之后，还要上传网络
 
-        final CommunityItem communityItem = new CommunityItem();
+        communityItem = new CommunityItem();
         communityItem.setCommDescription(description);
         if(bitmap != null){
             bmobFile = new BmobFile(saveBitmapFile(bitmap));
@@ -296,7 +331,7 @@ public class CreateCommunityActivity extends AppCompatActivity {
         communityItem.setVerify(new Boolean(false));
 
 
-        //当前用户。也是当前社团你的第一个成员
+        //step1:将当前用户加入到新建社团，也是社团的第一个成员------------社团表
         BmobRelation bmobRelation = new BmobRelation();
         bmobRelation.add(BmobUser.getCurrentUser(Student.class));
         communityItem.setCommMembers(bmobRelation);
@@ -305,24 +340,34 @@ public class CreateCommunityActivity extends AppCompatActivity {
             public void getSuccess(Object o) {
                 deleteIcon(IMAGE_FILE_CROP_NAME);
                 onSignupSuccess();
-
-                //修改当前用户，加入社团字段  的信息
-                Student newUser = new Student();
-                BmobRelation relation = new BmobRelation();
-                //将用户B添加到多对多关联中
-                relation.add(communityItem);
-                newUser.setCommunities(relation);
-                newUser.update(BmobUser.getCurrentUser(Student.class).getObjectId(),new UpdateListener() {
+                //step1:将当前用户加入到新建社团，也是社团的第一个成员------------用户社团表（用户表的一个附属）
+                BmobQuery<StudentCommunity> queryStu = new BmobQuery<>();
+                Student student =  BmobUser.getCurrentUser(Student.class);
+                queryStu.addWhereEqualTo("student",new BmobPointer(student));
+                queryStu.findObjects(new FindListener<StudentCommunity>() {
                     @Override
-                    public void done(BmobException e) {
+                    public void done(List<StudentCommunity> list, BmobException e) {
                         if (e == null) {
-                            Log.i("bmob", "user BmobRelation");
+                            Log.i("htht", "done查到啦！！！ "+list.get(0).getObjectId());
+                            BmobRelation relation = new BmobRelation();
+                            relation.add(communityItem);
+                            StudentCommunity studentCommunity = new StudentCommunity();
+                            studentCommunity.setCommunities(relation);
+                            studentCommunity.update(list.get(0).getObjectId(), new UpdateListener() {
+                                @Override
+                                public void done(BmobException e) {
+                                    if (e == null) {
+                                        Log.i("htht", "done: 将当前用户加入到新建社团，也是社团的第一个成员------------用户社团表   " );
+                                    } else {
+                                        Log.i("htht", "将当前用户加入到新建社团，也是社团的第一个成员------------用户社团表：" + e.getMessage() + "," + e.getErrorCode());
+                                    }
+                                }
+                            });
                         } else {
-                            Log.i("bmob", "失败：" + e.getMessage());
+                            Log.i("htht", "222 " + e.getMessage() + e.getErrorCode());
                         }
                     }
                 });
-
             }
 
             @Override
@@ -331,10 +376,61 @@ public class CreateCommunityActivity extends AppCompatActivity {
             }
         });
 
+        //检查是否拍了照片，如果拍了则删除。
+        deleteIcon(IMAGE_FILE_NAME);
+    }
+
+
+    private void changeComm(){
+        if (!validate()) {
+            onSignupFailed();
+            Log.i("htht", "changeComm: 直接退出了");
+            return;
+        }
+
+        btn_create_comm.setEnabled(false);
+
+        final ProgressDialog progressDialog = new ProgressDialog(context,
+                R.style.Theme_AppCompat_DayNight_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("修改中...");
+        progressDialog.show();
+
+        String name = ed_comm_name.getText().toString();
+        String school = ed_comm_school.getText().toString();
+        String description = ed_comm_description.getText().toString();
+
+        //将图片设置完之后，还要上传网络
+
+        CommunityItem newCommItem = new CommunityItem();
+
+        if(bitmap != null){
+            bmobFile = new BmobFile(saveBitmapFile(bitmap));
+            newCommItem.setCommIcon(bmobFile);
+        }
+        newCommItem.setCommDescription(description);
+        newCommItem.setCommSchool(school);
+        newCommItem.setCommName(name);
+        newCommItem.setVerify(new Boolean(false));
+
+        new CommModel().changeCommItem(communityItem.getObjectId(), newCommItem, new CommModelImpl.BaseListener() {
+            @Override
+            public void getSuccess(Object o) {
+                deleteIcon(IMAGE_FILE_CROP_NAME);
+                onSignupSuccess();
+            }
+
+            @Override
+            public void getFailure() {
+                deleteIcon(IMAGE_FILE_CROP_NAME);
+            }
+        });
 
         //检查是否拍了照片，如果拍了则删除。
         deleteIcon(IMAGE_FILE_NAME);
     }
+
+
 
     private boolean validate() {
         boolean valid = true;
@@ -368,6 +464,7 @@ public class CreateCommunityActivity extends AppCompatActivity {
     private void onSignupSuccess() {
         btn_create_comm.setEnabled(true);
         finish();
+        commDetailActivity.finish();
     }
 
     private void onSignupFailed() {

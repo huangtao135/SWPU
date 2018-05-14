@@ -263,7 +263,7 @@
             android:id="@+id/menu_edit_comm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_comm"
+            android:src="@drawable/ic_change_comm"
             android:visibility="gone"
             app:fab_label="修改社团信息"
             app:fab_size="mini" />
@@ -273,7 +273,7 @@
             android:id="@+id/menu_apply_be_member"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_comm"
+            android:src="@drawable/ic_apply_list"
             android:visibility="gone"
             app:fab_label="查看申请加入列表"
             app:fab_size="mini" />

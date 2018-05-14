@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -23,9 +25,11 @@ import com.ht.communi.view.ICommunityApply;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 public class applyBeMemberActivity extends AppCompatActivity implements ICommunityApply {
@@ -39,6 +43,7 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
 
     private List<Student> mList = new ArrayList<>();  //临时容器
     private List<Student> mApplyList;     //真正的社团数据
+    private ImageView bImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +54,7 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
 
         mPresenter = new CommunityApplyPresenter(this);
         communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM_APPLY");
-        Log.i("htht", "onCreate:communityItem=== "+communityItem);
+        Log.i("htht", "onCreate:communityItem=== " + communityItem);
 
         if (NetUtil.checkNet(this) && communityItem != null) {
             mPresenter.onRefresh(communityItem);
@@ -59,9 +64,17 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
     private void initView() {
         rv_apply_list = findViewById(R.id.rv_apply_list);
         swipeRefreshLayout = findViewById(R.id.srl_apply);
+        //左上角返回图标
+        bImageView = findViewById(R.id.iv_apply_be_member_back);
+        bImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
-    private void initRefreshList(){
+    private void initRefreshList() {
         // 设置下拉进度的主题颜色
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
 
@@ -69,8 +82,8 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(communityItem != null)
-                mPresenter.onRefresh(communityItem);
+                if (communityItem != null)
+                    mPresenter.onRefresh(communityItem);
             }
         });
 
@@ -116,76 +129,79 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 final Student student = mApplyList.get(position);
+                //step1:社团的申请列表移除
+                BmobRelation relationApply = new BmobRelation();
+                relationApply.remove(student);
                 switch (index) {
                     case 0:
-                        Log.i("htht", "点击同意: "+student.getStuName());
-                        //step1:社团的申请列表移除，加入到社团成员列表
-                        BmobRelation relationApply = new BmobRelation();
-                        final BmobRelation relationMember = new BmobRelation();
-
-                        relationApply.remove(student);
+                        Log.i("htht", "点击同意: " + student.getStuName());
+                        //step1:加入到社团成员列表
+                        BmobRelation relationMember = new BmobRelation();
                         relationMember.add(student);
-
                         communityItem.setCommApplies(relationApply);
                         communityItem.setCommMembers(relationMember);
                         communityItem.update(new UpdateListener() {
                             @Override
                             public void done(BmobException e) {
-                                if(e==null){
-                                    //step2:将此社团加入到该用户的  所加入社团目录   中
-                                    BmobRelation relationComm = new BmobRelation();
-                                    relationComm.add(communityItem);
-                                    StudentCommunity studentCommunity = new StudentCommunity();
-                                    studentCommunity.setStudent(student);
-                                    studentCommunity.setCommunities(relationComm);
-                                    studentCommunity.save(new SaveListener<String>() {
+                                if (e == null) {
+                                    //step3:将此社团加入到该用户的  所加入社团目录   中
+                                    BmobQuery<StudentCommunity> query = new BmobQuery<>();
+                                    query.addWhereEqualTo("student", new BmobPointer(student));
+                                    query.findObjects(new FindListener<StudentCommunity>() {
                                         @Override
-                                        public void done(String s, BmobException e) {
-                                            if(e==null){
-                                                Log.i("htht", "111同意了那个用户的  用户加入社团修改成功 ");
-                                            }else{
-                                                Log.i("htht", "222同意了那个用户的  用户加入社团修改失败 "+e.getMessage()+e.getErrorCode());
+                                        public void done(List<StudentCommunity> list, BmobException e) {
+                                            if (e == null) {
+                                                Log.i("htht", "done查到啦！！！ " + list.get(0).getObjectId());
+                                                BmobRelation relationComm = new BmobRelation();
+                                                relationComm.add(communityItem);
+                                                StudentCommunity studentCommunity = new StudentCommunity();
+                                                studentCommunity.setStudent(student);
+                                                studentCommunity.setCommunities(relationComm);
+                                                studentCommunity.update(list.get(0).getObjectId(), new UpdateListener() {
+                                                    @Override
+                                                    public void done(BmobException e) {
+                                                        if (e == null) {
+                                                            Log.i("htht", "111同意了那个用户的  用户加入社团修改成功 ");
+                                                            //step4:更新listView 数据
+                                                            if (communityItem != null)
+                                                                mPresenter.onRefresh(communityItem);
+                                                        } else {
+                                                            Log.i("htht", "222同意了那个用户的  用户加入社团修改失败 " + e.getMessage() + e.getErrorCode());
+                                                        }
+                                                    }
+                                                });
+                                            } else {
+                                                Log.i("htht", "222 " + e.getMessage() + e.getErrorCode());
                                             }
                                         }
                                     });
-
-//                                    studentCommunity.update(new UpdateListener() {
-//                                        @Override
-//                                        public void done(BmobException e) {
-//                                            if (e == null) {
-//                                                Log.i("htht", "111同意了那个用户的  用户加入社团修改成功 ");
-//                                            } else {
-//                                                Log.i("htht", "222同意了那个用户的  用户加入社团修改失败 " + e.getMessage() + e.getErrorCode());
-//                                            }
-//                                        }
-//                                    });
-
-
-
-//                                    Student newUser = new Student();
-//                                    newUser.setCommunities(relationComm);
-//                                    newUser.update(student.getObjectId(),new UpdateListener() {
-//                                        @Override
-//                                        public void done(BmobException e) {
-//                                            if(e==null){
-//                                                Log.i("htht", "111同意了那个用户的  用户加入社团修改成功 ");
-//                                            }else{
-//                                                Log.i("htht", "222同意了那个用户的  用户加入社团修改失败 "+e.getMessage()+e.getErrorCode());
-//                                            }
-//                                        }
-//                                    });
                                     Log.i("htht", "333同意了那个用户的 社团信息  修改成功 ");
 
-                                }else{
-                                    Log.i("htht","失败："+e.getMessage());
+                                } else {
+                                    Log.i("htht", "失败：" + e.getMessage());
                                 }
                             }
                         });
 
-
                         break;
                     case 1:
-                        Log.i("htht", "点击拒绝: "+student.getStuName());
+                        Log.i("htht", "点击拒绝: " + student.getStuName());
+                        // 社团的申请列表移除
+                        communityItem.setCommApplies(relationApply);
+                        communityItem.update(new UpdateListener() {
+                            @Override
+                            public void done(BmobException e) {
+                                if (e == null) {
+                                    Log.i("htht", "拒绝某个用户加入社团成功 ");
+                                    //step2:更新listView 数据
+                                    if (communityItem != null)
+                                        mPresenter.onRefresh(communityItem);
+                                } else {
+                                    Log.i("htht", "拒绝某个用户加入社团成功" + e.getMessage());
+                                }
+                            }
+                        });
+
                         break;
                 }
                 // false : close the menu; true : not close the menu
@@ -193,7 +209,7 @@ public class applyBeMemberActivity extends AppCompatActivity implements ICommuni
             }
         });
 
-        commApplyAdapter = new CommApplyAdapter(this,mList);
+        commApplyAdapter = new CommApplyAdapter(this, mList);
         rv_apply_list.setAdapter(commApplyAdapter);
     }
 

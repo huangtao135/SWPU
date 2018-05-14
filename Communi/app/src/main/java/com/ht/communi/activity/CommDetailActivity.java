@@ -51,6 +51,9 @@ import me.maxwin.view.XListView;
  * 2.点击我的社团的时候，如果是管理员，则点击查看申请列表，如果是普通成员，则没有此按钮
  */
 public class CommDetailActivity extends AppCompatActivity implements XListView.IXListViewListener, ICommunityReply {
+    //完成修改社团回退两次
+    public static CommDetailActivity commDetailActivity = null;
+
     private TextView tv_comm_detail_title;
     private TextView tv_comm_detail_school;
     private TextView tv_comm_detail_content;
@@ -85,6 +88,9 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comm_detail);
+
+        commDetailActivity = this;
+
         initView();
         communityItem = (CommunityItem) getIntent().getSerializableExtra("COMM");
         //根据当前用户身份，判断显示FloatingActionButton显示哪些
@@ -94,7 +100,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
             menu_apply_be_member.setVisibility(View.VISIBLE);
             menu_edit_comm.setVisibility(View.VISIBLE);
 
-            menu_want_be_member.setVisibility(View.VISIBLE);
+            menu_want_be_member.setVisibility(View.GONE);
         } else {
             menu_apply_be_member.setVisibility(View.GONE);
             menu_edit_comm.setVisibility(View.GONE);
@@ -154,7 +160,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         }
 
         //评论的xListView
-        xListView.setPullRefreshEnable(true);
+        xListView.setPullRefreshEnable(false);
         xListView.setPullLoadEnable(false);
         xListView.setXListViewListener(this);
         mAdapter = new CommunityReplyAdapter(this, R.layout.activity_comm_reply_item, mList);
@@ -237,8 +243,9 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
                     public void done(BmobException e) {
                         if (e == null) {
                             Log.i("htht", "申请加入本社图成功");
+                            Toast.makeText(CommDetailActivity.this,"申请成功，请等待社团管理员回应",Toast.LENGTH_SHORT).show();
                         } else {
-                            Log.i("htht", "申请加入本社图成功：" + e.getMessage());
+                            Log.i("htht", "申请加入本社图失败：" + e.getMessage());
                         }
                     }
                 });
@@ -255,6 +262,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
                 if (communityItem != null) {
                     bundle.putSerializable("COMM_EVENT", communityItem);
                 }
+                intent.putExtra("IS_LEADER",isLeader);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -281,6 +289,13 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
             @Override
             public void onClick(View v) {
                 if (communityItem != null) {
+                    Intent intent = new Intent(CommDetailActivity.this,CreateCommunityActivity.class);
+                    Bundle bundle = new Bundle();
+                    if (communityItem != null) {
+                        bundle.putSerializable("COMM_CHANGE", communityItem);
+                    }
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
             }
         });
@@ -353,11 +368,10 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
      */
     @Override
     public void onRefresh(List<CommunityReplyItem> list) {
-//        xListView.setPullLoadEnable(true);
         mDynamicList = list;
         mAdapter.setDatas(mDynamicList);
         mAdapter.notifyDataSetChanged();
-        onLoad();
+//        onLoad();
     }
 
     /**
@@ -374,6 +388,7 @@ public class CommDetailActivity extends AppCompatActivity implements XListView.I
         }
     }
 
+    //暂时不需要这个方法了
     private void onLoad() {
         xListView.setVisibility(View.VISIBLE);
 
